@@ -23,7 +23,7 @@ public class LogUtil {
         String className = stackTraceElement.getClassName();
         String methodName = stackTraceElement.getMethodName();
         return  "\n"+className+"Controller --> "+methodName+"() error!"+
-                "\n"+" - msg="+msg;
+                " - msg="+msg;
     }
 
     public static String outLogHead(StackTraceElement stackTraceElement, ResponseData responseData){

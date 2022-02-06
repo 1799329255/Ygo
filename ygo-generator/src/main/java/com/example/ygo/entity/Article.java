@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 @ApiModel(value="com.example.ygo.entity.Article")
 public class Article implements Serializable {
@@ -20,7 +21,7 @@ public class Article implements Serializable {
     private Long userId;
 
     @ApiModelProperty(value="categoryId分类关联表ID")
-    private Integer categoryId;
+    private Long categoryId;
 
     @ApiModelProperty(value="title标题")
     private String title;
@@ -49,6 +50,12 @@ public class Article implements Serializable {
     @ApiModelProperty(value="content内容")
     private String content;
 
+    @ApiModelProperty(value="分类名字")
+    private String categoryName;
+
+    @ApiModelProperty(value="标签集合")
+    private List<Articlelabel> articlelabels;
+
     private static final long serialVersionUID = 1L;
 
     public Long getId() {
@@ -67,11 +74,11 @@ public class Article implements Serializable {
         this.userId = userId;
     }
 
-    public Integer getCategoryId() {
+    public Long getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(Integer categoryId) {
+    public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
     }
 
@@ -151,6 +158,22 @@ public class Article implements Serializable {
         this.content = content == null ? null : content.trim();
     }
 
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public List<Articlelabel> getArticlelabels() {
+        return articlelabels;
+    }
+
+    public void setArticlelabels(List<Articlelabel> articlelabels) {
+        this.articlelabels = articlelabels;
+    }
+
     @Override
     public boolean equals(Object that) {
         if (this == that) {
@@ -216,6 +239,8 @@ public class Article implements Serializable {
         sb.append(", deleteTime=").append(deleteTime);
         sb.append(", status=").append(status);
         sb.append(", content=").append(content);
+        sb.append(", categoryName=").append(categoryName);
+        sb.append(", articlelabels=").append(articlelabels);
         sb.append("]");
         return sb.toString();
     }
@@ -241,7 +266,7 @@ public class Article implements Serializable {
             return this;
         }
 
-        public Builder categoryId(Integer categoryId) {
+        public Builder categoryId(Long categoryId) {
             obj.setCategoryId(categoryId);
             return this;
         }
@@ -347,7 +372,7 @@ public class Article implements Serializable {
     public enum Column {
         id("id", "id", "BIGINT", false),
         userId("user_id", "userId", "BIGINT", false),
-        categoryId("category_id", "categoryId", "INTEGER", false),
+        categoryId("category_id", "categoryId", "BIGINT", false),
         title("title", "title", "VARCHAR", false),
         pic("pic", "pic", "VARCHAR", false),
         likeNum("like_num", "likeNum", "BIGINT", false),

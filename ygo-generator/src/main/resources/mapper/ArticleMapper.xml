@@ -4,7 +4,7 @@
   <resultMap id="BaseResultMap" type="com.example.ygo.entity.Article">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
-    <result column="category_id" jdbcType="INTEGER" property="categoryId" />
+    <result column="category_id" jdbcType="BIGINT" property="categoryId" />
     <result column="title" jdbcType="VARCHAR" property="title" />
     <result column="pic" jdbcType="VARCHAR" property="pic" />
     <result column="like_num" jdbcType="BIGINT" property="likeNum" />
@@ -219,7 +219,7 @@
       view_num, create_time, update_time, 
       delete_time, status, content
       )
-    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{categoryId,jdbcType=INTEGER}, 
+    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{categoryId,jdbcType=BIGINT}, 
       #{title,jdbcType=VARCHAR}, #{pic,jdbcType=VARCHAR}, #{likeNum,jdbcType=BIGINT}, 
       #{viewNum,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
       #{deleteTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, #{content,jdbcType=LONGVARCHAR}
@@ -291,7 +291,7 @@
             #{record.userId,jdbcType=BIGINT},
           </if>
           <if test="record.categoryId != null">
-            #{record.categoryId,jdbcType=INTEGER},
+            #{record.categoryId,jdbcType=BIGINT},
           </if>
           <if test="record.title != null">
             #{record.title,jdbcType=VARCHAR},
@@ -348,7 +348,7 @@
             user_id = #{record.userId,jdbcType=BIGINT},
           </if>
           <if test="record.categoryId != null">
-            category_id = #{record.categoryId,jdbcType=INTEGER},
+            category_id = #{record.categoryId,jdbcType=BIGINT},
           </if>
           <if test="record.title != null">
             title = #{record.title,jdbcType=VARCHAR},
@@ -388,7 +388,7 @@
     update y_article
     set id = #{record.id,jdbcType=BIGINT},
       user_id = #{record.userId,jdbcType=BIGINT},
-      category_id = #{record.categoryId,jdbcType=INTEGER},
+      category_id = #{record.categoryId,jdbcType=BIGINT},
       title = #{record.title,jdbcType=VARCHAR},
       pic = #{record.pic,jdbcType=VARCHAR},
       like_num = #{record.likeNum,jdbcType=BIGINT},
@@ -406,7 +406,7 @@
     update y_article
     set id = #{record.id,jdbcType=BIGINT},
       user_id = #{record.userId,jdbcType=BIGINT},
-      category_id = #{record.categoryId,jdbcType=INTEGER},
+      category_id = #{record.categoryId,jdbcType=BIGINT},
       title = #{record.title,jdbcType=VARCHAR},
       pic = #{record.pic,jdbcType=VARCHAR},
       like_num = #{record.likeNum,jdbcType=BIGINT},
@@ -434,7 +434,7 @@
             user_id = #{record.userId,jdbcType=BIGINT},
           </if>
           <if test="record.categoryId != null">
-            category_id = #{record.categoryId,jdbcType=INTEGER},
+            category_id = #{record.categoryId,jdbcType=BIGINT},
           </if>
           <if test="record.title != null">
             title = #{record.title,jdbcType=VARCHAR},
@@ -471,7 +471,7 @@
   <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.example.ygo.entity.Article">
     update y_article
     set user_id = #{userId,jdbcType=BIGINT},
-      category_id = #{categoryId,jdbcType=INTEGER},
+      category_id = #{categoryId,jdbcType=BIGINT},
       title = #{title,jdbcType=VARCHAR},
       pic = #{pic,jdbcType=VARCHAR},
       like_num = #{likeNum,jdbcType=BIGINT},
@@ -486,7 +486,7 @@
   <update id="updateByPrimaryKey" parameterType="com.example.ygo.entity.Article">
     update y_article
     set user_id = #{userId,jdbcType=BIGINT},
-      category_id = #{categoryId,jdbcType=INTEGER},
+      category_id = #{categoryId,jdbcType=BIGINT},
       title = #{title,jdbcType=VARCHAR},
       pic = #{pic,jdbcType=VARCHAR},
       like_num = #{likeNum,jdbcType=BIGINT},
@@ -552,7 +552,7 @@
       delete_time, status, content)
     values
     <foreach collection="list" item="item" separator=",">
-      (#{item.id,jdbcType=BIGINT}, #{item.userId,jdbcType=BIGINT}, #{item.categoryId,jdbcType=INTEGER}, 
+      (#{item.id,jdbcType=BIGINT}, #{item.userId,jdbcType=BIGINT}, #{item.categoryId,jdbcType=BIGINT}, 
         #{item.title,jdbcType=VARCHAR}, #{item.pic,jdbcType=VARCHAR}, #{item.likeNum,jdbcType=BIGINT}, 
         #{item.viewNum,jdbcType=BIGINT}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, 
         #{item.deleteTime,jdbcType=TIMESTAMP}, #{item.status,jdbcType=INTEGER}, #{item.content,jdbcType=LONGVARCHAR}
@@ -576,7 +576,7 @@
           #{item.userId,jdbcType=BIGINT}
         </if>
         <if test="'category_id'.toString() == column.value">
-          #{item.categoryId,jdbcType=INTEGER}
+          #{item.categoryId,jdbcType=BIGINT}
         </if>
         <if test="'title'.toString() == column.value">
           #{item.title,jdbcType=VARCHAR}

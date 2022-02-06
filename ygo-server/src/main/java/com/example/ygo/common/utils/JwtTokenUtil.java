@@ -1,5 +1,6 @@
 package com.example.ygo.common.utils;
 
+import com.example.ygo.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -21,6 +22,8 @@ import java.util.Map;
 @Component
 public class JwtTokenUtil {
 
+    //存放用户ID
+    private static final String CLAIM_KEY_USERID = "jti";
     //存放用户名
     private static final String CLAIM_KEY_USERNAME = "sub";
     //创建的时间
@@ -33,14 +36,32 @@ public class JwtTokenUtil {
     /**
      * 根据用户信息生成token
      *
-     * @param userDetails
+     * @param user
      * @return
      */
-    public String createToken(UserDetails userDetails) {
+    public String createToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
+        claims.put(CLAIM_KEY_USERID, user.getId());
+        claims.put(CLAIM_KEY_USERNAME, user.getUsername());
         claims.put(CLAIM_KEY_CREATE_TIME, new Date());
         return createToken(claims);
+    }
+
+    /**
+     * 从token中获取登录用户ID
+     *
+     * @param token
+     * @return
+     */
+    public Long getUserIdFromToken(String token) {
+        Long id;
+        try {
+            Claims claims = getClaimsFromToken(token);
+            id = Long.parseLong(claims.getId());
+        } catch (Exception e) {
+            id = null;
+        }
+        return id;
     }
 
     /**
@@ -64,12 +85,15 @@ public class JwtTokenUtil {
      * 验证token是否有效
      *
      * @param token
-     * @param userDetails
+     * @param user
      * @return
      */
-    public boolean validateToken(String token, UserDetails userDetails) {
+    public boolean validateToken(String token, User user) {
+        Long id = getUserIdFromToken(token);
         String username = getUserNameFromToken(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        return id==user.getId()
+                && username.equals(user.getUsername())
+                && !isTokenExpired(token);
     }
 
     /**

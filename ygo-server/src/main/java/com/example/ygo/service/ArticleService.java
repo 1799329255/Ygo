@@ -2,6 +2,8 @@ package com.example.ygo.service;
 
 import com.example.ygo.entity.Article;
 
+import java.util.List;
+
 /**
  * @author 林屹峰
  * @version 1.0
@@ -10,4 +12,6 @@ import com.example.ygo.entity.Article;
  * @since 2022/2/6 16:43
  */
 public interface ArticleService extends BaseService<Article,Long>{
+
+    List<Article> findByUserId(Long userId);
 }

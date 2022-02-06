@@ -114,23 +114,23 @@ public class UserController extends BaseController<User,Long>{
             //登录
             String username = jsonObject.getString("username");
             String password = jsonObject.getString("password");
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            if (userDetails==null || !passwordEncoder.matches(password,userDetails.getPassword())){
+            User user = (User) userDetailsService.loadUserByUsername(username);
+            if (user==null || !passwordEncoder.matches(password,user.getPassword())){
                 log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],
                         new ResponseData("1005","用户名或密码错误")));
                 return ResponseMsgUtil.error(GlobalException.USER_LOGIN_ERROR);
             }
-            if (!userDetails.isEnabled()){
+            if (!user.isEnabled()){
                 log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],
                         new ResponseData("1006","账号被禁用，请联系管理员")));
                 return ResponseMsgUtil.error(GlobalException.USER_NOT_ENABLED_ERROR);
             }
             //更新用户(密码设为null)
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails,
-                    null,userDetails.getAuthorities());
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user,
+                    null,user.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             //返回token
-            String token = jwtTokenUtil.createToken(userDetails);
+            String token = jwtTokenUtil.createToken(user);
             Map<String, Object> tokenMap = new HashMap<>();
             tokenMap.put("tokenHead",tokenHead);
             tokenMap.put("token",token);

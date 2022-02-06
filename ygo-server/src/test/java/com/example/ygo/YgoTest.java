@@ -4,8 +4,10 @@ package com.example.ygo;
 import com.example.ygo.common.utils.EmailUtil;
 
 import com.example.ygo.common.utils.MinioUtil;
+import com.example.ygo.dao.ArticleMapper;
 import com.example.ygo.dao.RoleMapper;
 import com.example.ygo.dao.UserMapper;
+import com.example.ygo.entity.ArticleExample;
 import com.example.ygo.entity.User;
 import com.example.ygo.service.RoleService;
 import com.example.ygo.service.UserService;
@@ -34,14 +36,17 @@ import java.util.Date;
 public class YgoTest
 {
     @Resource
-    UserService userService;
+    private ArticleMapper articleMapper;
 
     @Test
     public void sendThymeleafMail() {
-        User user = new User();
-        user.setName("aaa");
-        user.setPhone(null);
-        user.setEmail("17778462570@qq.com");
-        System.out.println(userService.isRepeat(user));
+        System.out.println(articleMapper.findArticleInfoByExample(
+                new ArticleExample()
+                        .createCriteria()
+                        .andUserIdEqualTo((long) 1)
+                        .andLogicalDeleted(false)
+                        .example()
+        ));
+
     }
 }

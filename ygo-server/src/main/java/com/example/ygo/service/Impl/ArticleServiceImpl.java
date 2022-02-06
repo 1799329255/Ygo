@@ -8,6 +8,7 @@ import com.example.ygo.service.ArticleService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author 林屹峰
@@ -25,5 +26,17 @@ public class ArticleServiceImpl extends BaseServiceImpl<Article,Long, ArticleExa
     @Override
     public BaseMapper<Article, Long, ArticleExample> getBaseMapper() {
         return articleMapper;
+    }
+
+    @Override
+    public List<Article> findByUserId(Long userId) {
+        List<Article> articles = articleMapper.findArticleInfoByExample(
+                new ArticleExample()
+                        .createCriteria()
+                        .andUserIdEqualTo(userId)
+                        .andLogicalDeleted(false)
+                        .example()
+        );
+        return articles;
     }
 }
