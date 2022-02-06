@@ -35,12 +35,12 @@
             y_article_category ac,
             y_article_label al,
             y_article_with_label awl
-        <if test="_parameter != null">
-            <where>
-                a.category_id = ac.id
-                AND awl.article_id = a.id
-                AND awl.label_id = al.id
-                <if test="_parameter != null"> AND </if>
+        <where>
+            a.category_id = ac.id
+            AND awl.article_id = a.id
+            AND awl.label_id = al.id
+            <if test="_parameter != null">
+                AND
                 <foreach collection="oredCriteria" item="criteria" separator="or">
                     <if test="criteria.valid">
                         <trim prefix="(" prefixOverrides="and" suffix=")">
@@ -66,8 +66,8 @@
                         </trim>
                     </if>
                 </foreach>
-            </where>
-        </if>
+            </if>
+        </where>
     </select>
 
 </mapper>
