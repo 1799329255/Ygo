@@ -125,9 +125,10 @@
 
 
 
-        <table schema="" tableName="y_user_with_user">
+        <table schema="" tableName="y_article_label">
             <!--去除表名前缀-->
             <domainObjectRenamingRule searchString="^Y" replaceString="" />
+
         </table>
 
 
