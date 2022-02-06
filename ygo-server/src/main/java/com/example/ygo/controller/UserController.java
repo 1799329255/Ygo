@@ -202,5 +202,36 @@ public class UserController extends BaseController<User,Long>{
         }
     }
 
+    @RequestMapping(value = "/findFansByUserId", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "根据Id获得其粉丝列表")
+    public ResponseData findFansByUserId(Long id){
+        try {
+            if (id==null){
+                log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"请求参数校验失败"));
+                return ResponseMsgUtil.error(GlobalException.REQ_PARAMS_ERROR);
+            }
+            return ResponseMsgUtil.success(userService.findFansByUserId(id));
+        } catch (Exception e){
+            log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],GlobalException.UNKNOWN_ERROR), e);
+            return ResponseMsgUtil.error(GlobalException.UNKNOWN_ERROR);
+        }
+    }
+
+    @RequestMapping(value = "/findFollowsByUserId", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "根据Id获得其关注列表")
+    public ResponseData findFollowsByUserId(Long id){
+        try {
+            if (id==null){
+                log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"请求参数校验失败"));
+                return ResponseMsgUtil.error(GlobalException.REQ_PARAMS_ERROR);
+            }
+            return ResponseMsgUtil.success(userService.findFollowsByUserId(id));
+        } catch (Exception e){
+            log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],GlobalException.UNKNOWN_ERROR), e);
+            return ResponseMsgUtil.error(GlobalException.UNKNOWN_ERROR);
+        }
+    }
 
 }

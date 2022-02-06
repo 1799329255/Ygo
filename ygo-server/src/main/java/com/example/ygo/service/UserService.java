@@ -2,6 +2,8 @@ package com.example.ygo.service;
 
 import com.example.ygo.entity.User;
 
+import java.util.List;
+
 /**
  * @author 林屹峰
  * @version 1.0
@@ -20,4 +22,8 @@ public interface UserService extends BaseService<User,Long>{
     int addUser(User user);
 
     Boolean isRepeat(User user);
+
+    List<User> findFansByUserId(Long id);
+
+    List<User> findFollowsByUserId(Long id);
 }

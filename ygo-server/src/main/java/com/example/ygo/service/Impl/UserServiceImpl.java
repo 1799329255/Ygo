@@ -4,16 +4,15 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.example.ygo.dao.BaseMapper;
 import com.example.ygo.dao.UserMapper;
 import com.example.ygo.dao.UserwithroleMapper;
-import com.example.ygo.entity.Role;
-import com.example.ygo.entity.User;
-import com.example.ygo.entity.UserExample;
-import com.example.ygo.entity.Userwithrole;
+import com.example.ygo.dao.UserwithuserMapper;
+import com.example.ygo.entity.*;
 import com.example.ygo.service.RoleService;
 import com.example.ygo.service.UserService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author 林屹峰
@@ -31,6 +30,8 @@ public class UserServiceImpl extends BaseServiceImpl<User,Long, UserExample> imp
     private UserwithroleMapper userwithroleMapper;
     @Resource
     private RoleService roleService;
+    @Resource
+    private UserwithuserMapper userwithuserMapper;
 
     @Override
     public BaseMapper<User, Long, UserExample> getBaseMapper() {
@@ -107,6 +108,50 @@ public class UserServiceImpl extends BaseServiceImpl<User,Long, UserExample> imp
             return false;
         }
         return true;
+    }
+
+    @Override
+    public List<User> findFansByUserId(Long id) {
+        List<Userwithuser> userwithusers = userwithuserMapper.selectByExample(
+                new UserwithuserExample()
+                        .createCriteria()
+                        .andFanIdEqualTo(id)
+                        .example()
+        );
+        List<Long> list = userwithusers.stream().map(Userwithuser::getFollowId).collect(Collectors.toList());
+        if (CollectionUtil.isEmpty(list)){
+            return null;
+        }
+        List<User> users = userMapper.selectByExample(
+                new UserExample()
+                        .createCriteria()
+                        .andIdIn(list)
+                        .andStatusNotEqualTo(0)
+                        .example()
+        );
+        return users;
+    }
+
+    @Override
+    public List<User> findFollowsByUserId(Long id) {
+        List<Userwithuser> userwithusers = userwithuserMapper.selectByExample(
+                new UserwithuserExample()
+                        .createCriteria()
+                        .andFollowIdEqualTo(id)
+                        .example()
+        );
+        List<Long> list = userwithusers.stream().map(Userwithuser::getFanId).collect(Collectors.toList());
+        if (CollectionUtil.isEmpty(list)){
+            return null;
+        }
+        List<User> users = userMapper.selectByExample(
+                new UserExample()
+                        .createCriteria()
+                        .andIdIn(list)
+                        .andStatusNotEqualTo(0)
+                        .example()
+        );
+        return users;
     }
 
 }
