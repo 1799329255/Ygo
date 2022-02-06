@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.ygo.dao.RoleMapper">
+
+    <resultMap id="PermissionWithRole" type="com.example.ygo.entity.Role" extends="BaseResultMap">
+        <collection property="permissions" ofType="com.example.ygo.entity.Permission" javaType="java.util.List">
+            <id column="pid" property="id"/>
+            <result column="purl" property="url"/>
+            <result column="ppid" property="parentId"/>
+            <result column="panme" property="name"/>
+            <result column="pstatus" property="status"/>
+        </collection>
+    </resultMap>
+
+    <!-- 根据用户id查询角色列表 -->
+    <select id="findRolesByUserId" resultType="com.example.ygo.entity.Role">
+        SELECT
+            r.id,
+            r.`name`,
+            r.nickname
+        FROM
+            y_role r LEFT JOIN y_user_with_role ur
+            ON r.id = ur.role_id
+        WHERE
+            ur.user_id = #{userId} AND r.`status`!=0
+    </select>
+
+    <!-- 获取角色及其权限列表 -->
+    <select id="findRolesWithPermissions" resultType="com.example.ygo.entity.Role">
+        SELECT
+            r.id,
+            r.`name`,
+            r.nickname,
+            r.`status`,
+            p.id AS pid,
+            p.url AS purl,
+            p.parent_id AS ppid,
+            p.`name` AS panme,
+            p.`status` AS pstatus
+        FROM
+            y_permission p,
+            y_role_with_permission rp,
+            y_role r
+        WHERE
+            rp.permission_id = p.id
+        AND rp.role_id = r.id
+        AND p.`status` != 0
+        AND r.`status` != 0
+        ORDER BY
+            r.id
+    </select>
+
+</mapper>

@@ -1,0 +1,141 @@
+server:
+  # 端口
+  port: 8081
+
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+  thymeleaf:
+    cache: false
+    encoding: UTF-8
+    servlet:
+      content-type: text/html
+
+  mail:
+    # 配置 SMTP 服务器地址
+    host: smtp.163.com
+    # 发送者邮箱
+    username: lin1799329255@163.com
+    # 配置密码，注意不是真正的密码，而是刚刚申请到的授权码
+    password: QNAZFTZIIOKJXPPW
+    # 端口号465或994
+    port: 465
+    # 默认的邮件编码为UTF-8
+    default-encoding: UTF-8
+    # 协议
+    protocol: smtp
+    # 配置SSL 加密工厂
+    properties:
+      mail:
+        smtp:
+          connectiontimeout: 5000
+          timeout: 3000
+          writetimeout: 5000
+          socketFactoryClass: javax.net.ssl.SSLSocketFactory
+          auth: true
+          ssl:
+            enable: true
+        #表示开启 DEBUG 模式，这样，邮件发送过程的日志会在控制台打印出来，方便排查错误
+        debug: true
+
+  # 数据源配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ygo?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
+    hikari:
+      # 连接池名
+      pool-name: DateHikariCP
+      # 最小空闲连接数
+      minimum-idle: 5
+      # 空闲连接存活最大时间，默认600000（10分钟）
+      idle-timeout: 180000
+      # 最大连接数，默认10
+      maximum-pool-size: 10
+      # 从连接池返回的连接的自动提交
+      auto-commit: true
+      # 连接最大存活时间，0表示永久存活，默认1800000（30分钟）
+      max-lifetime: 1800000
+      # 连接超时时间，默认30000（30秒）
+      connection-timeout: 30000
+      # 测试连接是否可用的查询语句
+      connection-test-query: SELECT 1
+
+  redis:
+    #超时时间
+    timeout: 10000ms
+    #服务器地址
+    host: 127.0.0.1
+    #服务器端口
+    port: 6379
+    #数据库
+    database: 0
+    #密码
+    #password: root
+    lettuce:
+      pool:
+        #最大连接数，默认8
+        max-active: 1024
+        #最大连接阻塞等待时间，默认-1
+        max-wait: 10000ms
+        #最大空闲连接
+        max-idle: 200
+        #最小空闲连接
+        min-idle: 5
+
+# Mybatis配置
+mybatis:
+  #配置Mapper映射文件
+  mapper-locations: classpath*:/mapper/*.xml
+  # 配置MyBatis数据返回类型别名（默认别名是类名）
+  type-aliases-package: com.example.pojo
+  configuration:
+    # 自动驼峰命名
+    map-underscore-to-camel-case: false
+
+# Mybatis SQL 打印(方法接口所在的包，不是Mapper.xml所在的包)
+logging:
+  level:
+    com.example.ygo.dao: debug
+    #  在控制台输出的日志的格式
+  pattern:
+    console: "%d{yyyy-MM-dd} %-5level %logger{10} - %msg%n"
+
+jwt:
+  # JWT存储的请求头
+  tokenHeader: Authorization
+  # JWT 加解密使用的密钥
+  secret: yeb-secret
+  # JWT的超期限时间（60*60*24）
+  expiration: 604800
+  # JWT 负载中拿到开头
+  tokenHead: Bearer
+
+#分页pageHelper
+pagehelper:
+  #数据库语言
+  helper-dialect: mysql
+  #启用合理化
+  reasonable: true
+  #支持通过Mapper接口参数来传递分页参数
+  support-methods-arguments: true
+
+minio:
+  #url
+  endpoint: http://127.0.0.1
+  #端口号
+  port: 9000
+  #accessKey类似于用户ID，用于唯一标识你的账户
+  accessKey: minioadmin
+  #secretKey是你账户的密码
+  secretKey: minioadmin
+  #如果是true，则用的是https而不是http,默认值是true
+  secure: false
+  #默认存储桶
+  bucketName: "hope-bucket"
+  #配置目录
+  configDir: "/home/data/"
+
