@@ -125,7 +125,7 @@
 
 
 
-        <table schema="" tableName="y_comment">
+        <table schema="" tableName="y_package">
             <!--去除表名前缀-->
             <domainObjectRenamingRule searchString="^Y" replaceString="" />
 

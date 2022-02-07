@@ -59,6 +59,18 @@ public class CommentController extends BaseController<Comment,Long> {
         }
         return ResponseMsgUtil.success(commentService.findByUserId(user.getId()));
     }
+    @RequestMapping(value = "/findByArticleId", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "根据ArticleId获取评论列表")
+    public ResponseData findByArticleId(Long articleId){
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (user==null){
+            log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],
+                    new ResponseData("401","账号未登录或已过期")));
+            return ResponseMsgUtil.error(GlobalException.NOT_LOGIN_ERROR);
+        }
+        return ResponseMsgUtil.success(commentService.findByArticleId(articleId));
+    }
 
     @RequestMapping(value = "/addComment", method = RequestMethod.POST)
     @ResponseBody
