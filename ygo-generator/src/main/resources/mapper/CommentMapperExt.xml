@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.ygo.dao.CommentMapper">
+
+    <resultMap id="CommentInfo" type="com.example.ygo.entity.Comment" extends="BaseResultMap">
+        <association property="user" javaType="com.example.ygo.entity.User">
+            <id column="uid" jdbcType="BIGINT" property="id" />
+            <result column="uname" jdbcType="VARCHAR" property="name" />
+            <result column="upassword" jdbcType="VARCHAR" property="password" />
+            <result column="uage" jdbcType="INTEGER" property="age" />
+            <result column="upic" jdbcType="VARCHAR" property="pic" />
+            <result column="usex" jdbcType="INTEGER" property="sex" />
+            <result column="uphone" jdbcType="BIGINT" property="phone" />
+            <result column="uemail" jdbcType="VARCHAR" property="email" />
+            <result column="uaddress" jdbcType="VARCHAR" property="address" />
+            <result column="uban_time" jdbcType="TIMESTAMP" property="banTime" />
+            <result column="ucreate_time" jdbcType="TIMESTAMP" property="createTime" />
+            <result column="uupdate_time" jdbcType="TIMESTAMP" property="updateTime" />
+            <result column="udelete_time" jdbcType="TIMESTAMP" property="deleteTime" />
+            <result column="ustatus" jdbcType="INTEGER" property="status" />
+        </association>
+    </resultMap>
+
+    <!-- 获得权限及其角色列表 -->
+    <select id="findCommentInfoByExample" parameterType="com.example.ygo.entity.CommentExample" resultMap="CommentInfo">
+        SELECT
+        c.id,
+        c.article_id,
+        c.user_id,
+        c.content,
+        c.pic,
+        c.like_num,
+        c.create_time,
+        c.update_time,
+        c.delete_time,
+        c.`status`,
+        u.id uid,
+        u.`name` uname,
+        u.age uage,
+        u.pic upic,
+        u.sex usex,
+        u.phone uphone,
+        u.email uemail,
+        u.address uaddress,
+        u.ban_time uban_time,
+        u.create_time ucreate_time,
+        u.update_time uupdate_time,
+        u.delete_time udelete_time,
+        u.`status` ustatus
+        FROM
+        `y_comment` c,
+        y_user u
+        <where>
+            c.user_id = u.id
+            <if test="_parameter != null">
+                <foreach collection="oredCriteria" item="criteria" separator="or">
+                    <if test="criteria.valid">
+                        AND
+                        <trim prefix="(" prefixOverrides="and" suffix=")">
+                            <foreach collection="criteria.criteria" item="criterion">
+                                <choose>
+                                    <when test="criterion.noValue">
+                                        and c.${criterion.condition}
+                                    </when>
+                                    <when test="criterion.singleValue">
+                                        and c.${criterion.condition} #{criterion.value}
+                                    </when>
+                                    <when test="criterion.betweenValue">
+                                        and c.${criterion.condition} #{criterion.value} and c.#{criterion.secondValue}
+                                    </when>
+                                    <when test="criterion.listValue">
+                                        and c.${criterion.condition}
+                                        <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                                            c.#{listItem}
+                                        </foreach>
+                                    </when>
+                                </choose>
+                            </foreach>
+                        </trim>
+                    </if>
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+</mapper>

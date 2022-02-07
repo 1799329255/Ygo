@@ -5,9 +5,11 @@ import com.example.ygo.common.utils.EmailUtil;
 
 import com.example.ygo.common.utils.MinioUtil;
 import com.example.ygo.dao.ArticleMapper;
+import com.example.ygo.dao.CommentMapper;
 import com.example.ygo.dao.RoleMapper;
 import com.example.ygo.dao.UserMapper;
 import com.example.ygo.entity.ArticleExample;
+import com.example.ygo.entity.CommentExample;
 import com.example.ygo.entity.User;
 import com.example.ygo.service.RoleService;
 import com.example.ygo.service.UserService;
@@ -36,14 +38,14 @@ import java.util.Date;
 public class YgoTest
 {
     @Resource
-    private ArticleMapper articleMapper;
+    private CommentMapper commentMapper;
 
     @Test
     public void sendThymeleafMail() {
-        System.out.println(articleMapper.findArticleInfoByExample(
-                new ArticleExample()
+        System.out.println(commentMapper.findCommentInfoByExample(
+                new CommentExample()
                         .createCriteria()
-                        .andUserIdEqualTo((long) 1)
+                        .andArticleIdEqualTo((long) 1)
                         .andLogicalDeleted(false)
                         .example()
         ));

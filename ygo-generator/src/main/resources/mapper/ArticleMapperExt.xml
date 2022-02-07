@@ -40,9 +40,9 @@
             AND awl.article_id = a.id
             AND awl.label_id = al.id
             <if test="_parameter != null">
-                AND
                 <foreach collection="oredCriteria" item="criteria" separator="or">
                     <if test="criteria.valid">
+                        AND
                         <trim prefix="(" prefixOverrides="and" suffix=")">
                             <foreach collection="criteria.criteria" item="criterion">
                                 <choose>
