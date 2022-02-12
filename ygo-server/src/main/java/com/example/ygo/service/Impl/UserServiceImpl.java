@@ -6,6 +6,8 @@ import com.example.ygo.dao.UserMapper;
 import com.example.ygo.dao.UserwithroleMapper;
 import com.example.ygo.dao.UserwithuserMapper;
 import com.example.ygo.entity.*;
+import com.example.ygo.service.ArticleService;
+import com.example.ygo.service.CommentService;
 import com.example.ygo.service.RoleService;
 import com.example.ygo.service.UserService;
 import org.springframework.stereotype.Service;
@@ -32,10 +34,25 @@ public class UserServiceImpl extends BaseServiceImpl<User,Long, UserExample> imp
     private RoleService roleService;
     @Resource
     private UserwithuserMapper userwithuserMapper;
+    @Resource
+    private ArticleService articleService;
+    @Resource
+    private CommentService commentService;
 
     @Override
     public BaseMapper<User, Long, UserExample> getBaseMapper() {
         return userMapper;
+    }
+
+    @Override
+    public User getUserInfo(Long id) {
+        User user = userMapper.selectByPrimaryKey(id);
+        user.setArticles(articleService.findByUserId(id));
+        user.setComments(commentService.findByUserId(id));
+        user.setFollows(findFollowsByUserId(id));
+        user.setFans(findFansByUserId(id));
+        user.setRoles(roleService.findRolesByUserId(id));
+        return user;
     }
 
     @Override

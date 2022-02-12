@@ -14,4 +14,10 @@ import java.util.List;
 public interface ArticleService extends BaseService<Article,Long>{
 
     List<Article> findByUserId(Long userId);
+
+    List<Article> findArticleInfo(Article article,
+                                  Long[] labelIds,
+                                  String order,
+                                  Integer pageNum,
+                                  Integer pageSize);
 }

@@ -72,6 +72,23 @@ public class CommentController extends BaseController<Comment,Long> {
         return ResponseMsgUtil.success(commentService.findByArticleId(articleId));
     }
 
+    @RequestMapping(value = "/findCommentInfo", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "获取评论列表详情")
+    public ResponseData findCommentInfo(Long articleId,
+                                        Long userId,
+                                        String content,
+                                        String order,
+                                        Integer pageNum,
+                                        Integer pageSize){
+
+        Comment comment = new Comment();
+        comment.setArticleId(articleId);
+        comment.setUserId(userId);
+        comment.setContent(content);
+        return ResponseMsgUtil.success(commentService.findCommentInfo(comment,order,pageNum,pageSize));
+    }
+
     @RequestMapping(value = "/addComment", method = RequestMethod.POST)
     @ResponseBody
     @ApiOperation(value = "添加评论")

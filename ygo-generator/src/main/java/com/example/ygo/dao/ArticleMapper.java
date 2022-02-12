@@ -9,5 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ArticleMapper extends BaseMapper<Article,Long,ArticleExample>{
 
-    List<Article> findArticleInfoByExample(ArticleExample articleExample);
+    List<Article> findArticleInfoByExample(@Param("articleExample") ArticleExample articleExample,
+                                           @Param("labelIds")Long[] labelIds);
 }

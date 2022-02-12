@@ -16,10 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.security.Principal;
@@ -59,6 +56,24 @@ public class ArticleController extends BaseController<Article,Long>{
             return ResponseMsgUtil.error(GlobalException.NOT_LOGIN_ERROR);
         }
         return ResponseMsgUtil.success(articleService.findByUserId(user.getId()));
+    }
+
+    @RequestMapping(value = "/findArticleInfo", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "获取文章列表详情")
+    public ResponseData findArticleInfo(Long userId,
+                                        Long categoryId,
+                                        String title,
+                                        Long[] labelIds,
+                                        String order,
+                                        Integer pageNum,
+                                        Integer pageSize){
+
+        Article article = new Article();
+        article.setUserId(userId);
+        article.setCategoryId(categoryId);
+        article.setTitle(title);
+        return ResponseMsgUtil.success(articleService.findArticleInfo(article,labelIds,order,pageNum,pageSize));
     }
 
     @RequestMapping(value = "/addArticle", method = RequestMethod.POST)

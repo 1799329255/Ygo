@@ -1,5 +1,6 @@
 package com.example.ygo.service.Impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.example.ygo.dao.BaseMapper;
 import com.example.ygo.dao.CommentMapper;
 import com.example.ygo.entity.Comment;
@@ -48,6 +49,25 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment,Long, CommentExa
                         .andArticleIdEqualTo(articleId)
                         .andLogicalDeleted(false)
                         .example()
+        );
+        return comments;
+    }
+
+    @Override
+    public List<Comment> findCommentInfo(Comment comment,
+                                         String order,
+                                         Integer pageNum,
+                                         Integer pageSize) {
+        List<Comment> comments = commentMapper.findCommentInfoByExample(
+                new CommentExample()
+                        .createCriteria()
+                        .when(comment.getArticleId()!=null,criteria -> criteria.andArticleIdEqualTo(comment.getArticleId()))
+                        .when(comment.getUserId()!=null,criteria -> criteria.andUserIdEqualTo(comment.getUserId()))
+                        .when(StrUtil.isNotBlank(comment.getContent()),criteria -> criteria.andContentLike("%"+comment.getContent()+"%"))
+                        .andLogicalDeleted(false)
+                        .example()
+                        .orderBy(order)
+                        .when(pageNum!=null && pageSize!=null,example -> example.page(pageNum,pageSize))
         );
         return comments;
     }

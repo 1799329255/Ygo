@@ -50,8 +50,6 @@ public class UserController extends BaseController<User,Long>{
     @Resource
     private UserService userService;
     @Resource
-    private RoleService roleService;
-    @Resource
     private UserDetailsService userDetailsService;
     @Resource
     private PasswordEncoder passwordEncoder;
@@ -144,17 +142,16 @@ public class UserController extends BaseController<User,Long>{
     @RequestMapping(value = "/getUserInfo", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "获得当前登录用户详情")
-    public ResponseData getTAdminInfo(Principal principal){
+    public ResponseData getUserInfo(){
         try {
-            if (principal==null){
+            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (user==null){
                 log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],
                         new ResponseData("401","账号未登录或已过期")));
                 return ResponseMsgUtil.error(GlobalException.NOT_LOGIN_ERROR);
             }
-            String username = principal.getName();
-            User user = userService.findByName(username);
+            user = userService.getUserInfo(user.getId());
             user.setPassword(null);
-            user.setRoles(roleService.findRolesByUserId(user.getId()));
             return ResponseMsgUtil.success(user);
         } catch (Exception e){
             log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],GlobalException.UNKNOWN_ERROR), e);

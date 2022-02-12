@@ -14,6 +14,9 @@
     <!-- 获得权限及其角色列表 -->
     <select id="findArticleInfoByExample" parameterType="com.example.ygo.entity.ArticleExample" resultMap="ArticleInfo">
         SELECT
+        <if test="articleExample.distinct">
+            distinct
+        </if>
             a.id,
             a.user_id,
             a.category_id,
@@ -31,18 +34,25 @@
             al.`name` labelName,
             al.`status` labelStatus
         FROM
-            `y_article` a,
-            y_article_category ac,
-            y_article_label al,
-            y_article_with_label awl
+            (
+                SELECT * FROM y_article
+                <if test="articleExample.rows != null">
+                    <if test="articleExample.offset != null">
+                        limit ${articleExample.offset}, ${articleExample.rows}
+                    </if>
+                    <if test="articleExample.offset == null">
+                        limit ${articleExample.rows}
+                    </if>
+                </if>
+            ) a
+            LEFT JOIN y_article_with_label awl ON awl.article_id = a.id
+            LEFT JOIN y_article_label al ON awl.label_id = al.id
+            LEFT JOIN y_article_category ac ON ac.id = a.category_id
         <where>
-            a.category_id = ac.id
-            AND awl.article_id = a.id
-            AND awl.label_id = al.id
-            <if test="_parameter != null">
-                <foreach collection="oredCriteria" item="criteria" separator="or">
+            <if test="articleExample != null">
+                <foreach collection="articleExample.oredCriteria" item="criteria" separator="or">
                     <if test="criteria.valid">
-                        AND
+
                         <trim prefix="(" prefixOverrides="and" suffix=")">
                             <foreach collection="criteria.criteria" item="criterion">
                                 <choose>
@@ -53,12 +63,12 @@
                                         and a.${criterion.condition} #{criterion.value}
                                     </when>
                                     <when test="criterion.betweenValue">
-                                        and a.${criterion.condition} #{criterion.value} and a.#{criterion.secondValue}
+                                        and a.${criterion.condition} #{criterion.value} and #{criterion.secondValue}
                                     </when>
                                     <when test="criterion.listValue">
                                         and a.${criterion.condition}
                                         <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
-                                            a.#{listItem}
+                                            #{listItem}
                                         </foreach>
                                     </when>
                                 </choose>
@@ -67,7 +77,18 @@
                     </if>
                 </foreach>
             </if>
+            <if test="labelIds != null">
+                and al.id IN
+                <foreach collection="labelIds" item="labelId" separator="," open="(" close=")">
+                    #{labelId}
+                </foreach>
+            </if>
         </where>
+
+        <if test="articleExample.orderByClause != null">
+            order by ${articleExample.orderByClause}
+        </if>
+
     </select>
 
 </mapper>

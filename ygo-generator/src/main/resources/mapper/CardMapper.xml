@@ -89,7 +89,7 @@
   </sql>
   <sql id="Base_Column_List">
     id, password, name, ban, locale, type_f, type_c, pic, level, attribute, race, atk, 
-    def, pend, link, link_arrow, pend_desc, desc, rare, href, like_num, view_num, create_time, 
+    def, pend, link, link_arrow, pend_desc, `desc`, rare, href, like_num, view_num, create_time,
     update_time, delete_time, status
   </sql>
   <select id="selectByExample" parameterType="com.example.ygo.entity.CardExample" resultMap="BaseResultMap">

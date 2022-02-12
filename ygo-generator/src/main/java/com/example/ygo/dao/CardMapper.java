@@ -9,4 +9,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CardMapper extends BaseMapper<Card,Long,CardExample>{
 
+    List<Card> findCardInfoByExample(CardExample cardExample);
+
+    List<Card> findCardByExample(CardExample cardExample);
+
 }

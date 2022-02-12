@@ -1,18 +1,17 @@
 package com.example.ygo;
 
 
+import com.alibaba.fastjson.JSON;
 import com.example.ygo.common.utils.EmailUtil;
 
 import com.example.ygo.common.utils.MinioUtil;
-import com.example.ygo.dao.ArticleMapper;
-import com.example.ygo.dao.CommentMapper;
-import com.example.ygo.dao.RoleMapper;
-import com.example.ygo.dao.UserMapper;
-import com.example.ygo.entity.ArticleExample;
-import com.example.ygo.entity.CommentExample;
-import com.example.ygo.entity.User;
+import com.example.ygo.dao.*;
+import com.example.ygo.entity.*;
+import com.example.ygo.service.CardService;
 import com.example.ygo.service.RoleService;
 import com.example.ygo.service.UserService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +29,7 @@ import javax.mail.internet.MimeMessage;
 
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Unit test for simple App.
@@ -38,17 +38,18 @@ import java.util.Date;
 public class YgoTest
 {
     @Resource
-    private CommentMapper commentMapper;
+    private ArticleMapper articleMapper;
 
     @Test
     public void sendThymeleafMail() {
-        System.out.println(commentMapper.findCommentInfoByExample(
-                new CommentExample()
-                        .createCriteria()
-                        .andArticleIdEqualTo((long) 1)
-                        .andLogicalDeleted(false)
-                        .example()
-        ));
 
+        //Long[] ids = {Long.valueOf(1), Long.valueOf(2)};
+        List<Article> articles = articleMapper.findArticleInfoByExample(
+                new ArticleExample()
+                        .createCriteria()
+                        .andUserIdEqualTo((long) 1)
+                        .example().orderBy("id").page(0,3), null
+        );
+        System.out.println(JSON.toJSONString(new PageInfo<>(articles)));
     }
 }

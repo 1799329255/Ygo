@@ -64,6 +64,18 @@ public class User implements Serializable , UserDetails {
     @ApiModelProperty(value="角色集合")
     private List<Role> roles;
 
+    @ApiModelProperty(value="文章集合")
+    private List<Article> articles;
+
+    @ApiModelProperty(value="评论集合")
+    private List<Comment> comments;
+
+    @ApiModelProperty(value="关注集合")
+    private List<User> follows;
+
+    @ApiModelProperty(value="粉丝集合")
+    private List<User> fans;
+
     private static final long serialVersionUID = 1L;
 
     public Long getId() {
@@ -225,6 +237,38 @@ public class User implements Serializable , UserDetails {
         this.roles = roles;
     }
 
+    public List<Article> getArticles() {
+        return articles;
+    }
+
+    public void setArticles(List<Article> articles) {
+        this.articles = articles;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public List<User> getFollows() {
+        return follows;
+    }
+
+    public void setFollows(List<User> follows) {
+        this.follows = follows;
+    }
+
+    public List<User> getFans() {
+        return fans;
+    }
+
+    public void setFans(List<User> fans) {
+        this.fans = fans;
+    }
+
     @Override
     public boolean equals(Object that) {
         if (this == that) {
@@ -297,6 +341,10 @@ public class User implements Serializable , UserDetails {
         sb.append(", deleteTime=").append(deleteTime);
         sb.append(", status=").append(status);
         sb.append(", roles=").append(roles);
+        sb.append(", articles=").append(articles);
+        sb.append(", comments=").append(comments);
+        sb.append(", follows=").append(follows);
+        sb.append(", fans=").append(fans);
         sb.append("]");
         return sb.toString();
     }

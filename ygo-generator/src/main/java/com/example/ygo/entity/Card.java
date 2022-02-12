@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 @ApiModel(value="com.example.ygo.entity.Card")
 public class Card implements Serializable {
@@ -90,6 +91,9 @@ public class Card implements Serializable {
 
     @ApiModelProperty(value="status状态 0：删除  1：可用")
     private Integer status;
+
+    @ApiModelProperty(value="卡包集合")
+    private List<Package> packages;
 
     private static final long serialVersionUID = 1L;
 
@@ -305,6 +309,14 @@ public class Card implements Serializable {
         this.status = status;
     }
 
+    public List<Package> getPackages() {
+        return packages;
+    }
+
+    public void setPackages(List<Package> packages) {
+        this.packages = packages;
+    }
+
     @Override
     public boolean equals(Object that) {
         if (this == that) {
@@ -412,6 +424,7 @@ public class Card implements Serializable {
         sb.append(", updateTime=").append(updateTime);
         sb.append(", deleteTime=").append(deleteTime);
         sb.append(", status=").append(status);
+        sb.append(", packages=").append(packages);
         sb.append("]");
         return sb.toString();
     }

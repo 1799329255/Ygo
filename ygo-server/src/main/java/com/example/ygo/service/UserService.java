@@ -13,6 +13,8 @@ import java.util.List;
  */
 public interface UserService extends BaseService<User,Long>{
 
+    User getUserInfo(Long id);
+
     User findByName(String name);
 
     User findByEmail(String email);
