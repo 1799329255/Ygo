@@ -128,7 +128,8 @@
         <table schema="" tableName="y_article">
             <!--去除表名前缀-->
             <domainObjectRenamingRule searchString="^Y" replaceString="" />
-
+            <!--无法自动生成表字段类型为 text 的属性,需要用这个替代-->
+<!--            <columnOverride column="content" javaType="java.lang.String" jdbcType="VARCHAR"/>-->
         </table>
 
 

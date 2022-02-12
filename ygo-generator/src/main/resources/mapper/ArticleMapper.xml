@@ -6,6 +6,7 @@
     <result column="user_id" jdbcType="BIGINT" property="userId" />
     <result column="category_id" jdbcType="BIGINT" property="categoryId" />
     <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
     <result column="pic" jdbcType="VARCHAR" property="pic" />
     <result column="like_num" jdbcType="BIGINT" property="likeNum" />
     <result column="view_num" jdbcType="BIGINT" property="viewNum" />
@@ -13,9 +14,6 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
     <result column="status" jdbcType="INTEGER" property="status" />
-  </resultMap>
-  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.example.ygo.entity.Article">
-    <result column="content" jdbcType="LONGVARCHAR" property="content" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -76,36 +74,9 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, user_id, category_id, title, pic, like_num, view_num, create_time, update_time, 
+    id, user_id, category_id, title, content, pic, like_num, view_num, create_time, update_time, 
     delete_time, status
   </sql>
-  <sql id="Blob_Column_List">
-    content
-  </sql>
-  <select id="selectByExampleWithBLOBs" parameterType="com.example.ygo.entity.ArticleExample" resultMap="ResultMapWithBLOBs">
-    select
-    <if test="distinct">
-      distinct
-    </if>
-    <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
-    from y_article
-    <if test="_parameter != null">
-      <include refid="Example_Where_Clause" />
-    </if>
-    <if test="orderByClause != null">
-      order by ${orderByClause}
-    </if>
-    <if test="rows != null">
-      <if test="offset != null">
-        limit ${offset}, ${rows}
-      </if>
-      <if test="offset == null">
-        limit ${rows}
-      </if>
-    </if>
-  </select>
   <select id="selectByExample" parameterType="com.example.ygo.entity.ArticleExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
@@ -128,7 +99,7 @@
       </if>
     </if>
   </select>
-  <select id="selectByExampleSelective" parameterType="map" resultMap="ResultMapWithBLOBs">
+  <select id="selectByExampleSelective" parameterType="map" resultMap="BaseResultMap">
     select
     <if test="example != null and example.distinct">
       distinct
@@ -141,8 +112,6 @@
       </when>
       <otherwise>
         <include refid="Base_Column_List" />
-        ,
-        <include refid="Blob_Column_List" />
       </otherwise>
     </choose>
     from y_article
@@ -161,15 +130,13 @@
       </if>
     </if>
   </select>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
     from y_article
     where id = #{id,jdbcType=BIGINT}
   </select>
-  <select id="selectByPrimaryKeySelective" parameterType="map" resultMap="ResultMapWithBLOBs">
+  <select id="selectByPrimaryKeySelective" parameterType="map" resultMap="BaseResultMap">
     select
     <choose>
       <when test="selective != null and selective.length > 0">
@@ -179,18 +146,14 @@
       </when>
       <otherwise>
         <include refid="Base_Column_List" />
-        ,
-        <include refid="Blob_Column_List" />
       </otherwise>
     </choose>
     from y_article
     where id = #{id,jdbcType=BIGINT}
   </select>
-  <select id="selectByPrimaryKeyWithLogicalDelete" parameterType="map" resultMap="ResultMapWithBLOBs">
+  <select id="selectByPrimaryKeyWithLogicalDelete" parameterType="map" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
     from y_article
     where id = #{id,jdbcType=BIGINT}
       and status = 
@@ -215,14 +178,14 @@
   </delete>
   <insert id="insert" parameterType="com.example.ygo.entity.Article">
     insert into y_article (id, user_id, category_id, 
-      title, pic, like_num, 
-      view_num, create_time, update_time, 
-      delete_time, status, content
+      title, content, pic, 
+      like_num, view_num, create_time, 
+      update_time, delete_time, status
       )
     values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{categoryId,jdbcType=BIGINT}, 
-      #{title,jdbcType=VARCHAR}, #{pic,jdbcType=VARCHAR}, #{likeNum,jdbcType=BIGINT}, 
-      #{viewNum,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
-      #{deleteTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, #{content,jdbcType=LONGVARCHAR}
+      #{title,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, #{pic,jdbcType=VARCHAR}, 
+      #{likeNum,jdbcType=BIGINT}, #{viewNum,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{deleteTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}
       )
   </insert>
   <insert id="insertSelective" parameterType="map">
@@ -247,6 +210,9 @@
           <if test="record.title != null">
             title,
           </if>
+          <if test="record.content != null">
+            content,
+          </if>
           <if test="record.pic != null">
             pic,
           </if>
@@ -267,9 +233,6 @@
           </if>
           <if test="record.status != null">
             status,
-          </if>
-          <if test="record.content != null">
-            content,
           </if>
         </trim>
         <trim prefix="(" suffix=")" suffixOverrides="," />
@@ -296,6 +259,9 @@
           <if test="record.title != null">
             #{record.title,jdbcType=VARCHAR},
           </if>
+          <if test="record.content != null">
+            #{record.content,jdbcType=VARCHAR},
+          </if>
           <if test="record.pic != null">
             #{record.pic,jdbcType=VARCHAR},
           </if>
@@ -316,9 +282,6 @@
           </if>
           <if test="record.status != null">
             #{record.status,jdbcType=INTEGER},
-          </if>
-          <if test="record.content != null">
-            #{record.content,jdbcType=LONGVARCHAR},
           </if>
         </trim>
       </otherwise>
@@ -353,6 +316,9 @@
           <if test="record.title != null">
             title = #{record.title,jdbcType=VARCHAR},
           </if>
+          <if test="record.content != null">
+            content = #{record.content,jdbcType=VARCHAR},
+          </if>
           <if test="record.pic != null">
             pic = #{record.pic,jdbcType=VARCHAR},
           </if>
@@ -374,30 +340,9 @@
           <if test="record.status != null">
             status = #{record.status,jdbcType=INTEGER},
           </if>
-          <if test="record.content != null">
-            content = #{record.content,jdbcType=LONGVARCHAR},
-          </if>
         </trim>
       </otherwise>
     </choose>
-    <if test="_parameter != null">
-      <include refid="Update_By_Example_Where_Clause" />
-    </if>
-  </update>
-  <update id="updateByExampleWithBLOBs" parameterType="map">
-    update y_article
-    set id = #{record.id,jdbcType=BIGINT},
-      user_id = #{record.userId,jdbcType=BIGINT},
-      category_id = #{record.categoryId,jdbcType=BIGINT},
-      title = #{record.title,jdbcType=VARCHAR},
-      pic = #{record.pic,jdbcType=VARCHAR},
-      like_num = #{record.likeNum,jdbcType=BIGINT},
-      view_num = #{record.viewNum,jdbcType=BIGINT},
-      create_time = #{record.createTime,jdbcType=TIMESTAMP},
-      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
-      delete_time = #{record.deleteTime,jdbcType=TIMESTAMP},
-      status = #{record.status,jdbcType=INTEGER},
-      content = #{record.content,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -408,6 +353,7 @@
       user_id = #{record.userId,jdbcType=BIGINT},
       category_id = #{record.categoryId,jdbcType=BIGINT},
       title = #{record.title,jdbcType=VARCHAR},
+      content = #{record.content,jdbcType=VARCHAR},
       pic = #{record.pic,jdbcType=VARCHAR},
       like_num = #{record.likeNum,jdbcType=BIGINT},
       view_num = #{record.viewNum,jdbcType=BIGINT},
@@ -439,6 +385,9 @@
           <if test="record.title != null">
             title = #{record.title,jdbcType=VARCHAR},
           </if>
+          <if test="record.content != null">
+            content = #{record.content,jdbcType=VARCHAR},
+          </if>
           <if test="record.pic != null">
             pic = #{record.pic,jdbcType=VARCHAR},
           </if>
@@ -460,34 +409,17 @@
           <if test="record.status != null">
             status = #{record.status,jdbcType=INTEGER},
           </if>
-          <if test="record.content != null">
-            content = #{record.content,jdbcType=LONGVARCHAR},
-          </if>
         </trim>
       </otherwise>
     </choose>
     where id = #{record.id,jdbcType=BIGINT}
-  </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.example.ygo.entity.Article">
-    update y_article
-    set user_id = #{userId,jdbcType=BIGINT},
-      category_id = #{categoryId,jdbcType=BIGINT},
-      title = #{title,jdbcType=VARCHAR},
-      pic = #{pic,jdbcType=VARCHAR},
-      like_num = #{likeNum,jdbcType=BIGINT},
-      view_num = #{viewNum,jdbcType=BIGINT},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      delete_time = #{deleteTime,jdbcType=TIMESTAMP},
-      status = #{status,jdbcType=INTEGER},
-      content = #{content,jdbcType=LONGVARCHAR}
-    where id = #{id,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.example.ygo.entity.Article">
     update y_article
     set user_id = #{userId,jdbcType=BIGINT},
       category_id = #{categoryId,jdbcType=BIGINT},
       title = #{title,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
       pic = #{pic,jdbcType=VARCHAR},
       like_num = #{likeNum,jdbcType=BIGINT},
       view_num = #{viewNum,jdbcType=BIGINT},
@@ -509,21 +441,7 @@
     </if>
     limit 1
   </select>
-  <select id="selectOneByExampleWithBLOBs" parameterType="com.example.ygo.entity.ArticleExample" resultMap="ResultMapWithBLOBs">
-    select
-    <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
-    from y_article
-    <if test="_parameter != null">
-      <include refid="Example_Where_Clause" />
-    </if>
-    <if test="orderByClause != null">
-      order by ${orderByClause}
-    </if>
-    limit 1
-  </select>
-  <select id="selectOneByExampleSelective" parameterType="map" resultMap="ResultMapWithBLOBs">
+  <select id="selectOneByExampleSelective" parameterType="map" resultMap="BaseResultMap">
     select
     <choose>
       <when test="selective != null and selective.length > 0">
@@ -533,8 +451,6 @@
       </when>
       <otherwise>
         <include refid="Base_Column_List" />
-        ,
-        <include refid="Blob_Column_List" />
       </otherwise>
     </choose>
     from y_article
@@ -548,14 +464,14 @@
   </select>
   <insert id="batchInsert" parameterType="map">
     insert into y_article
-    (id, user_id, category_id, title, pic, like_num, view_num, create_time, update_time, 
-      delete_time, status, content)
+    (id, user_id, category_id, title, content, pic, like_num, view_num, create_time, 
+      update_time, delete_time, status)
     values
     <foreach collection="list" item="item" separator=",">
       (#{item.id,jdbcType=BIGINT}, #{item.userId,jdbcType=BIGINT}, #{item.categoryId,jdbcType=BIGINT}, 
-        #{item.title,jdbcType=VARCHAR}, #{item.pic,jdbcType=VARCHAR}, #{item.likeNum,jdbcType=BIGINT}, 
-        #{item.viewNum,jdbcType=BIGINT}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, 
-        #{item.deleteTime,jdbcType=TIMESTAMP}, #{item.status,jdbcType=INTEGER}, #{item.content,jdbcType=LONGVARCHAR}
+        #{item.title,jdbcType=VARCHAR}, #{item.content,jdbcType=VARCHAR}, #{item.pic,jdbcType=VARCHAR}, 
+        #{item.likeNum,jdbcType=BIGINT}, #{item.viewNum,jdbcType=BIGINT}, #{item.createTime,jdbcType=TIMESTAMP}, 
+        #{item.updateTime,jdbcType=TIMESTAMP}, #{item.deleteTime,jdbcType=TIMESTAMP}, #{item.status,jdbcType=INTEGER}
         )
     </foreach>
   </insert>
@@ -581,6 +497,9 @@
         <if test="'title'.toString() == column.value">
           #{item.title,jdbcType=VARCHAR}
         </if>
+        <if test="'content'.toString() == column.value">
+          #{item.content,jdbcType=VARCHAR}
+        </if>
         <if test="'pic'.toString() == column.value">
           #{item.pic,jdbcType=VARCHAR}
         </if>
@@ -601,9 +520,6 @@
         </if>
         <if test="'status'.toString() == column.value">
           #{item.status,jdbcType=INTEGER}
-        </if>
-        <if test="'content'.toString() == column.value">
-          #{item.content,jdbcType=LONGVARCHAR}
         </if>
       </foreach>
       )

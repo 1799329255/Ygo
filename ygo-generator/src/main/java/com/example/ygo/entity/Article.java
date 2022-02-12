@@ -26,6 +26,9 @@ public class Article implements Serializable {
     @ApiModelProperty(value="title标题")
     private String title;
 
+    @ApiModelProperty(value="content内容")
+    private String content;
+
     @ApiModelProperty(value="pic图片地址")
     private String pic;
 
@@ -47,10 +50,7 @@ public class Article implements Serializable {
     @ApiModelProperty(value="status状态 0：删除  1：可用")
     private Integer status;
 
-    @ApiModelProperty(value="content内容")
-    private String content;
-
-    @ApiModelProperty(value="分类名字")
+    @ApiModelProperty(value="文章分类名称")
     private String categoryName;
 
     @ApiModelProperty(value="标签集合")
@@ -88,6 +88,14 @@ public class Article implements Serializable {
 
     public void setTitle(String title) {
         this.title = title == null ? null : title.trim();
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content == null ? null : content.trim();
     }
 
     public String getPic() {
@@ -150,14 +158,6 @@ public class Article implements Serializable {
         this.status = status;
     }
 
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content == null ? null : content.trim();
-    }
-
     public String getCategoryName() {
         return categoryName;
     }
@@ -190,14 +190,14 @@ public class Article implements Serializable {
             && (this.getUserId() == null ? other.getUserId() == null : this.getUserId().equals(other.getUserId()))
             && (this.getCategoryId() == null ? other.getCategoryId() == null : this.getCategoryId().equals(other.getCategoryId()))
             && (this.getTitle() == null ? other.getTitle() == null : this.getTitle().equals(other.getTitle()))
+            && (this.getContent() == null ? other.getContent() == null : this.getContent().equals(other.getContent()))
             && (this.getPic() == null ? other.getPic() == null : this.getPic().equals(other.getPic()))
             && (this.getLikeNum() == null ? other.getLikeNum() == null : this.getLikeNum().equals(other.getLikeNum()))
             && (this.getViewNum() == null ? other.getViewNum() == null : this.getViewNum().equals(other.getViewNum()))
             && (this.getCreateTime() == null ? other.getCreateTime() == null : this.getCreateTime().equals(other.getCreateTime()))
             && (this.getUpdateTime() == null ? other.getUpdateTime() == null : this.getUpdateTime().equals(other.getUpdateTime()))
             && (this.getDeleteTime() == null ? other.getDeleteTime() == null : this.getDeleteTime().equals(other.getDeleteTime()))
-            && (this.getStatus() == null ? other.getStatus() == null : this.getStatus().equals(other.getStatus()))
-            && (this.getContent() == null ? other.getContent() == null : this.getContent().equals(other.getContent()));
+            && (this.getStatus() == null ? other.getStatus() == null : this.getStatus().equals(other.getStatus()));
     }
 
     @Override
@@ -208,6 +208,7 @@ public class Article implements Serializable {
         result = prime * result + ((getUserId() == null) ? 0 : getUserId().hashCode());
         result = prime * result + ((getCategoryId() == null) ? 0 : getCategoryId().hashCode());
         result = prime * result + ((getTitle() == null) ? 0 : getTitle().hashCode());
+        result = prime * result + ((getContent() == null) ? 0 : getContent().hashCode());
         result = prime * result + ((getPic() == null) ? 0 : getPic().hashCode());
         result = prime * result + ((getLikeNum() == null) ? 0 : getLikeNum().hashCode());
         result = prime * result + ((getViewNum() == null) ? 0 : getViewNum().hashCode());
@@ -215,7 +216,6 @@ public class Article implements Serializable {
         result = prime * result + ((getUpdateTime() == null) ? 0 : getUpdateTime().hashCode());
         result = prime * result + ((getDeleteTime() == null) ? 0 : getDeleteTime().hashCode());
         result = prime * result + ((getStatus() == null) ? 0 : getStatus().hashCode());
-        result = prime * result + ((getContent() == null) ? 0 : getContent().hashCode());
         return result;
     }
 
@@ -231,6 +231,7 @@ public class Article implements Serializable {
         sb.append(", userId=").append(userId);
         sb.append(", categoryId=").append(categoryId);
         sb.append(", title=").append(title);
+        sb.append(", content=").append(content);
         sb.append(", pic=").append(pic);
         sb.append(", likeNum=").append(likeNum);
         sb.append(", viewNum=").append(viewNum);
@@ -238,7 +239,6 @@ public class Article implements Serializable {
         sb.append(", updateTime=").append(updateTime);
         sb.append(", deleteTime=").append(deleteTime);
         sb.append(", status=").append(status);
-        sb.append(", content=").append(content);
         sb.append(", categoryName=").append(categoryName);
         sb.append(", articlelabels=").append(articlelabels);
         sb.append("]");
@@ -276,6 +276,11 @@ public class Article implements Serializable {
             return this;
         }
 
+        public Builder content(String content) {
+            obj.setContent(content);
+            return this;
+        }
+
         public Builder pic(String pic) {
             obj.setPic(pic);
             return this;
@@ -308,11 +313,6 @@ public class Article implements Serializable {
 
         public Builder status(Integer status) {
             obj.setStatus(status);
-            return this;
-        }
-
-        public Builder content(String content) {
-            obj.setContent(content);
             return this;
         }
 
@@ -374,14 +374,14 @@ public class Article implements Serializable {
         userId("user_id", "userId", "BIGINT", false),
         categoryId("category_id", "categoryId", "BIGINT", false),
         title("title", "title", "VARCHAR", false),
+        content("content", "content", "VARCHAR", false),
         pic("pic", "pic", "VARCHAR", false),
         likeNum("like_num", "likeNum", "BIGINT", false),
         viewNum("view_num", "viewNum", "BIGINT", false),
         createTime("create_time", "createTime", "TIMESTAMP", false),
         updateTime("update_time", "updateTime", "TIMESTAMP", false),
         deleteTime("delete_time", "deleteTime", "TIMESTAMP", false),
-        status("status", "status", "INTEGER", false),
-        content("content", "content", "LONGVARCHAR", false);
+        status("status", "status", "INTEGER", false);
 
         private static final String BEGINNING_DELIMITER = "\"";
 
