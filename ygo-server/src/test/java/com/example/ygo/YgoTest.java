@@ -11,7 +11,6 @@ import com.example.ygo.service.CardService;
 import com.example.ygo.service.RoleService;
 import com.example.ygo.service.UserService;
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,12 +43,17 @@ public class YgoTest
     public void sendThymeleafMail() {
 
         //Long[] ids = {Long.valueOf(1), Long.valueOf(2)};
+
+        ArticleExample articleExample = new ArticleExample()
+                .createCriteria()
+                .andUserIdEqualTo((long) 1)
+                .example().orderBy("id").page(0, 3);
+        long total = articleMapper.countByExample(articleExample);
         List<Article> articles = articleMapper.findArticleInfoByExample(
-                new ArticleExample()
-                        .createCriteria()
-                        .andUserIdEqualTo((long) 1)
-                        .example().orderBy("id").page(0,3), null
+                articleExample, null
         );
-        System.out.println(JSON.toJSONString(new PageInfo<>(articles)));
+        PageInfo<Article> pageInfo = new PageInfo<>(articles, 1, 3, total);
+        System.out.println(pageInfo);
+        System.out.println(JSON.toJSONString(pageInfo));
     }
 }

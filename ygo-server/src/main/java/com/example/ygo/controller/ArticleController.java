@@ -76,6 +76,29 @@ public class ArticleController extends BaseController<Article,Long>{
         return ResponseMsgUtil.success(articleService.findArticleInfo(article,labelIds,order,pageNum,pageSize));
     }
 
+    @RequestMapping(value = "/findArticleInfoPage", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "获取文章列表详情(分页)")
+    public ResponseData findArticleInfoPage(Long userId,
+                                            Long categoryId,
+                                            String title,
+                                            Long[] labelIds,
+                                            String order,
+                                            Integer pageNum,
+                                            Integer pageSize){
+        if (pageNum==null || pageSize==null
+                || pageNum <= 0 || pageSize <= 0){
+            log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"请求参数校验失败"));
+            return ResponseMsgUtil.error(GlobalException.REQ_PARAMS_ERROR);
+        }
+
+        Article article = new Article();
+        article.setUserId(userId);
+        article.setCategoryId(categoryId);
+        article.setTitle(title);
+        return ResponseMsgUtil.success(articleService.findArticleInfoPage(article,labelIds,order,pageNum,pageSize));
+    }
+
     @RequestMapping(value = "/addArticle", method = RequestMethod.POST)
     @ResponseBody
     @ApiOperation(value = "添加文章")

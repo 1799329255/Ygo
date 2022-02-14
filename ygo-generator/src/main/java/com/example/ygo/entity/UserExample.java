@@ -141,7 +141,7 @@ public class UserExample {
     }
 
     public UserExample page(Integer page, Integer pageSize) {
-        this.offset = page * pageSize;
+        this.offset = (page - 1) * pageSize;
         this.rows = pageSize;
         return this;
     }

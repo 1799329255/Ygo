@@ -1,6 +1,7 @@
 package com.example.ygo.service;
 
 import com.example.ygo.entity.Article;
+import com.example.ygo.entity.PageInfo;
 
 import java.util.List;
 
@@ -20,4 +21,9 @@ public interface ArticleService extends BaseService<Article,Long>{
                                   String order,
                                   Integer pageNum,
                                   Integer pageSize);
+    PageInfo<Article> findArticleInfoPage(Article article,
+                                 Long[] labelIds,
+                                 String order,
+                                 Integer pageNum,
+                                 Integer pageSize);
 }

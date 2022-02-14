@@ -5,6 +5,7 @@ import com.example.ygo.dao.BaseMapper;
 import com.example.ygo.dao.CommentMapper;
 import com.example.ygo.entity.Comment;
 import com.example.ygo.entity.CommentExample;
+import com.example.ygo.entity.PageInfo;
 import com.example.ygo.service.CommentService;
 import org.springframework.stereotype.Service;
 
@@ -70,5 +71,22 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment,Long, CommentExa
                         .when(pageNum!=null && pageSize!=null,example -> example.page(pageNum,pageSize))
         );
         return comments;
+    }
+
+    @Override
+    public PageInfo<Comment> findCommentInfoPage(Comment comment, String order, Integer pageNum, Integer pageSize) {
+        CommentExample commentExample = new CommentExample()
+                .createCriteria()
+                .when(comment.getArticleId() != null, criteria -> criteria.andArticleIdEqualTo(comment.getArticleId()))
+                .when(comment.getUserId() != null, criteria -> criteria.andUserIdEqualTo(comment.getUserId()))
+                .when(StrUtil.isNotBlank(comment.getContent()), criteria -> criteria.andContentLike("%" + comment.getContent() + "%"))
+                .andLogicalDeleted(false)
+                .example()
+                .orderBy(order)
+                .when(pageNum != null && pageSize != null, example -> example.page(pageNum, pageSize));
+
+        long total = commentMapper.countByExample(commentExample);
+        List<Comment> comments = commentMapper.findCommentInfoByExample(commentExample);
+        return new PageInfo<>(comments,pageNum,pageSize,total);
     }
 }

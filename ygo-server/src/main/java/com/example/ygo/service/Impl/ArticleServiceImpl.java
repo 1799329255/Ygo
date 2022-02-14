@@ -5,6 +5,7 @@ import com.example.ygo.dao.ArticleMapper;
 import com.example.ygo.dao.BaseMapper;
 import com.example.ygo.entity.Article;
 import com.example.ygo.entity.ArticleExample;
+import com.example.ygo.entity.PageInfo;
 import com.example.ygo.service.ArticleService;
 import org.springframework.stereotype.Service;
 
@@ -61,5 +62,21 @@ public class ArticleServiceImpl extends BaseServiceImpl<Article,Long, ArticleExa
                         ,labelIds
         );
         return articles;
+    }
+
+    @Override
+    public PageInfo<Article> findArticleInfoPage(Article article, Long[] labelIds, String order, Integer pageNum, Integer pageSize) {
+        ArticleExample articleExample = new ArticleExample()
+                .createCriteria()
+                .when(article.getUserId() != null, criteria -> criteria.andUserIdEqualTo(article.getUserId()))
+                .when(article.getCategoryId() != null, criteria -> criteria.andCategoryIdEqualTo(article.getCategoryId()))
+                .when(StrUtil.isNotBlank(article.getTitle()), criteria -> criteria.andTitleLike("%" + article.getTitle() + "%"))
+                .andLogicalDeleted(false)
+                .example()
+                .orderBy(order)
+                .when(pageNum != null && pageSize != null, example -> example.page(pageNum, pageSize));
+        long total = articleMapper.countByExample(articleExample);
+        List<Article> articles = articleMapper.findArticleInfoByExample(articleExample, labelIds);
+        return new PageInfo<>(articles,pageNum,pageSize,total);
     }
 }

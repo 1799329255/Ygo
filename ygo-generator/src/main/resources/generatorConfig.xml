@@ -27,7 +27,10 @@
         <!-- Example Criteria 增强插件 -->
         <plugin type="com.itfsw.mybatis.generator.plugins.ExampleEnhancedPlugin"/>
         <!-- MySQL分页插件 -->
-        <plugin type="com.itfsw.mybatis.generator.plugins.LimitPlugin"/>
+        <plugin type="com.itfsw.mybatis.generator.plugins.LimitPlugin">
+            <!-- 通过配置startPage影响Example中的page方法开始分页的页码，默认分页从0开始 -->
+            <property name="startPage" value="1"/>
+        </plugin>
         <!-- Example 目标包修改插件 -->
         <!--        <plugin type="com.itfsw.mybatis.generator.plugins.ExampleTargetPlugin"/>-->
         <!-- 批量插入插件 -->
@@ -125,7 +128,7 @@
 
 
 
-        <table schema="" tableName="y_article">
+        <table schema="" tableName="y_user_with_role">
             <!--去除表名前缀-->
             <domainObjectRenamingRule searchString="^Y" replaceString="" />
             <!--无法自动生成表字段类型为 text 的属性,需要用这个替代-->

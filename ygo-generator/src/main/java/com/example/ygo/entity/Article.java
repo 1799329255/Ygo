@@ -56,6 +56,9 @@ public class Article implements Serializable {
     @ApiModelProperty(value="标签集合")
     private List<Articlelabel> articlelabels;
 
+    @ApiModelProperty(value="用户")
+    private User user;
+
     private static final long serialVersionUID = 1L;
 
     public Long getId() {
@@ -174,6 +177,14 @@ public class Article implements Serializable {
         this.articlelabels = articlelabels;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     @Override
     public boolean equals(Object that) {
         if (this == that) {
@@ -241,6 +252,7 @@ public class Article implements Serializable {
         sb.append(", status=").append(status);
         sb.append(", categoryName=").append(categoryName);
         sb.append(", articlelabels=").append(articlelabels);
+        sb.append(", user=").append(user);
         sb.append("]");
         return sb.toString();
     }

@@ -4,6 +4,22 @@
 
     <resultMap id="ArticleInfo" type="com.example.ygo.entity.Article" extends="BaseResultMap">
         <result column="categoryName" property="categoryName"/>
+        <association property="user" javaType="com.example.ygo.entity.User">
+            <id column="uid" jdbcType="BIGINT" property="id" />
+            <result column="uname" jdbcType="VARCHAR" property="name" />
+            <result column="upassword" jdbcType="VARCHAR" property="password" />
+            <result column="uage" jdbcType="INTEGER" property="age" />
+            <result column="upic" jdbcType="VARCHAR" property="pic" />
+            <result column="usex" jdbcType="INTEGER" property="sex" />
+            <result column="uphone" jdbcType="BIGINT" property="phone" />
+            <result column="uemail" jdbcType="VARCHAR" property="email" />
+            <result column="uaddress" jdbcType="VARCHAR" property="address" />
+            <result column="uban_time" jdbcType="TIMESTAMP" property="banTime" />
+            <result column="ucreate_time" jdbcType="TIMESTAMP" property="createTime" />
+            <result column="uupdate_time" jdbcType="TIMESTAMP" property="updateTime" />
+            <result column="udelete_time" jdbcType="TIMESTAMP" property="deleteTime" />
+            <result column="ustatus" jdbcType="INTEGER" property="status" />
+        </association>
         <collection property="articlelabels" ofType="com.example.ygo.entity.Articlelabel" javaType="java.util.List">
             <id column="labelId" property="id"/>
             <result column="labelName" property="name"/>
@@ -32,7 +48,20 @@
             ac.`name` categoryName,
             al.id labelId,
             al.`name` labelName,
-            al.`status` labelStatus
+            al.`status` labelStatus,
+            u.id uid,
+            u.`name` uname,
+            u.age uage,
+            u.pic upic,
+            u.sex usex,
+            u.phone uphone,
+            u.email uemail,
+            u.address uaddress,
+            u.ban_time uban_time,
+            u.create_time ucreate_time,
+            u.update_time uupdate_time,
+            u.delete_time udelete_time,
+            u.`status` ustatus
         FROM
             (
                 SELECT * FROM y_article
@@ -48,6 +77,7 @@
             LEFT JOIN y_article_with_label awl ON awl.article_id = a.id
             LEFT JOIN y_article_label al ON awl.label_id = al.id
             LEFT JOIN y_article_category ac ON ac.id = a.category_id
+            LEFT JOIN y_user u ON u.id = a.user_id
         <where>
             <if test="articleExample != null">
                 <foreach collection="articleExample.oredCriteria" item="criteria" separator="or">
@@ -90,5 +120,4 @@
         </if>
 
     </select>
-
 </mapper>

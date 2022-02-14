@@ -140,7 +140,7 @@ public class ArticlelabelExample {
     }
 
     public ArticlelabelExample page(Integer page, Integer pageSize) {
-        this.offset = page * pageSize;
+        this.offset = (page - 1) * pageSize;
         this.rows = pageSize;
         return this;
     }
