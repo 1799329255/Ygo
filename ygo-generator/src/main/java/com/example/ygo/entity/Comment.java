@@ -46,6 +46,9 @@ public class Comment implements Serializable {
     @ApiModelProperty(value="用户")
     private User user;
 
+    @ApiModelProperty(value="文章")
+    private Article article;
+
     private static final long serialVersionUID = 1L;
 
     public Long getId() {
@@ -140,6 +143,14 @@ public class Comment implements Serializable {
         this.user = user;
     }
 
+    public Article getArticle() {
+        return article;
+    }
+
+    public void setArticle(Article article) {
+        this.article = article;
+    }
+
     @Override
     public boolean equals(Object that) {
         if (this == that) {
@@ -200,6 +211,7 @@ public class Comment implements Serializable {
         sb.append(", deleteTime=").append(deleteTime);
         sb.append(", status=").append(status);
         sb.append(", user=").append(user);
+        sb.append(", article=").append(article);
         sb.append("]");
         return sb.toString();
     }

@@ -19,6 +19,20 @@
             <result column="udelete_time" jdbcType="TIMESTAMP" property="deleteTime" />
             <result column="ustatus" jdbcType="INTEGER" property="status" />
         </association>
+        <association property="article" javaType="com.example.ygo.entity.Article">
+            <id column="aid" jdbcType="BIGINT" property="id" />
+            <result column="auser_id" jdbcType="BIGINT" property="userId" />
+            <result column="acategory_id" jdbcType="BIGINT" property="categoryId" />
+            <result column="atitle" jdbcType="VARCHAR" property="title" />
+            <result column="acontent" jdbcType="VARCHAR" property="content" />
+            <result column="apic" jdbcType="VARCHAR" property="pic" />
+            <result column="alike_num" jdbcType="BIGINT" property="likeNum" />
+            <result column="aview_num" jdbcType="BIGINT" property="viewNum" />
+            <result column="acreate_time" jdbcType="TIMESTAMP" property="createTime" />
+            <result column="aupdate_time" jdbcType="TIMESTAMP" property="updateTime" />
+            <result column="adelete_time" jdbcType="TIMESTAMP" property="deleteTime" />
+            <result column="astatus" jdbcType="INTEGER" property="status" />
+        </association>
     </resultMap>
 
     <!-- 获得权限及其角色列表 -->
@@ -49,7 +63,19 @@
             u.create_time ucreate_time,
             u.update_time uupdate_time,
             u.delete_time udelete_time,
-            u.`status` ustatus
+            u.`status` ustatus,
+            a.id aid,
+            a.user_id auser_id,
+            a.category_id acategory_id,
+            a.title atitle,
+            a.content acontent,
+            a.pic apic,
+            a.like_num alike_num,
+            a.view_num aview_num,
+            a.create_time acreate_time,
+            a.update_time aupdate_time,
+            a.delete_time adelete_time,
+            a.`status` astatus
         FROM
             (
                 SELECT * FROM `y_comment`
@@ -63,6 +89,7 @@
                 </if>
             ) c
             LEFT JOIN y_user u ON c.user_id = u.id
+            LEFT JOIN y_article a ON c.article_id = a.id
         <where>
 
             <if test="_parameter != null">

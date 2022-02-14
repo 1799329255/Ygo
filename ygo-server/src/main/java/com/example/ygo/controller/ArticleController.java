@@ -69,6 +69,11 @@ public class ArticleController extends BaseController<Article,Long>{
                                         Integer pageNum,
                                         Integer pageSize){
 
+        if (pageNum <= 0 || pageSize <= 0){
+            log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"请求参数校验失败"));
+            return ResponseMsgUtil.error(GlobalException.REQ_PARAMS_ERROR);
+        }
+
         Article article = new Article();
         article.setUserId(userId);
         article.setCategoryId(categoryId);
