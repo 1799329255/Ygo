@@ -1,5 +1,6 @@
 package com.example.ygo.service;
 
+import com.example.ygo.entity.PageInfo;
 import com.example.ygo.entity.User;
 
 import java.util.List;
@@ -27,5 +28,9 @@ public interface UserService extends BaseService<User,Long>{
 
     List<User> findFansByUserId(Long id);
 
+    PageInfo<User> findFansPageByUserId(Long id,Integer pageNum,Integer pageSize);
+
     List<User> findFollowsByUserId(Long id);
+
+    PageInfo<User> findFollowsPageByUserId(Long id,Integer pageNum,Integer pageSize);
 }

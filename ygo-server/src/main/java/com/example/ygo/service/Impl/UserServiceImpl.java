@@ -1,6 +1,7 @@
 package com.example.ygo.service.Impl;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.StrUtil;
 import com.example.ygo.dao.BaseMapper;
 import com.example.ygo.dao.UserMapper;
 import com.example.ygo.dao.UserwithroleMapper;
@@ -109,16 +110,21 @@ public class UserServiceImpl extends BaseServiceImpl<User,Long, UserExample> imp
 
     @Override
     public Boolean isRepeat(User user) {
+        //如果名字，手机，邮箱都没有，就不重复
+        if (StrUtil.isBlank(user.getName()) && user.getPhone()==null && StrUtil.isBlank(user.getEmail())){
+            return false;
+        }
+
         List<User> users = userMapper.selectByExample(
                 new UserExample()
                         .or()
-                        .when(user.getName()!=null,criteria -> criteria.andNameEqualTo(user.getName()))
+                        .when(StrUtil.isBlank(user.getName()),criteria -> criteria.andNameEqualTo(user.getName()))
                         .example()
                         .or()
                         .when(user.getPhone()!=null,criteria -> criteria.andPhoneEqualTo(user.getPhone()))
                         .example()
                         .or()
-                        .when(user.getEmail()!=null,criteria -> criteria.andEmailEqualTo(user.getEmail()))
+                        .when(StrUtil.isBlank(user.getEmail()),criteria -> criteria.andEmailEqualTo(user.getEmail()))
                         .example()
         );
         if (CollectionUtil.isEmpty(users)){
@@ -150,6 +156,30 @@ public class UserServiceImpl extends BaseServiceImpl<User,Long, UserExample> imp
     }
 
     @Override
+    public PageInfo<User> findFansPageByUserId(Long id,Integer pageNum,Integer pageSize) {
+        UserwithuserExample userwithuserExample = new UserwithuserExample()
+                .createCriteria()
+                .andFanIdEqualTo(id)
+                .example()
+                .when(pageNum != null && pageSize != null, example -> example.page(pageNum, pageSize));
+
+        long count = userwithuserMapper.countByExample(userwithuserExample);
+        List<Userwithuser> userwithusers = userwithuserMapper.selectByExample(userwithuserExample);
+        List<Long> list = userwithusers.stream().map(Userwithuser::getFollowId).collect(Collectors.toList());
+        if (CollectionUtil.isEmpty(list)){
+            return null;
+        }
+        List<User> users = userMapper.selectByExample(
+                new UserExample()
+                        .createCriteria()
+                        .andIdIn(list)
+                        .andLogicalDeleted(false)
+                        .example()
+        );
+        return new PageInfo<>(users,pageNum,pageSize,count);
+    }
+
+    @Override
     public List<User> findFollowsByUserId(Long id) {
         List<Userwithuser> userwithusers = userwithuserMapper.selectByExample(
                 new UserwithuserExample()
@@ -169,6 +199,30 @@ public class UserServiceImpl extends BaseServiceImpl<User,Long, UserExample> imp
                         .example()
         );
         return users;
+    }
+
+    @Override
+    public PageInfo<User> findFollowsPageByUserId(Long id,Integer pageNum,Integer pageSize) {
+        UserwithuserExample userwithuserExample = new UserwithuserExample()
+                .createCriteria()
+                .andFollowIdEqualTo(id)
+                .example()
+                .when(pageNum != null && pageSize != null, example -> example.page(pageNum, pageSize));
+
+        long count = userwithuserMapper.countByExample(userwithuserExample);
+        List<Userwithuser> userwithusers = userwithuserMapper.selectByExample(userwithuserExample);
+        List<Long> list = userwithusers.stream().map(Userwithuser::getFanId).collect(Collectors.toList());
+        if (CollectionUtil.isEmpty(list)){
+            return null;
+        }
+        List<User> users = userMapper.selectByExample(
+                new UserExample()
+                        .createCriteria()
+                        .andIdIn(list)
+                        .andLogicalDeleted(false)
+                        .example()
+        );
+        return new PageInfo<>(users,pageNum,pageSize,count);
     }
 
 }

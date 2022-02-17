@@ -40,6 +40,19 @@ public class EmailController {
     @ResponseBody
     @ApiOperation(value = "邮箱验证码")
     public ResponseData sendEmail(String email, HttpServletRequest request) {
+
+        String emailCode = emailUtil.sendMail(email);
+        //保存验证码到Session
+        request.getSession().setAttribute("emailCode", emailCode);
+        //验证码5分钟有效
+        request.getSession().setMaxInactiveInterval(60*5);
+        return ResponseMsgUtil.success(null);
+    }
+
+    @RequestMapping(value = "/emailRegister", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "邮箱验证码(注册使用)")
+    public ResponseData sendEmailRegister(String email, HttpServletRequest request) {
         User user = userService.findByEmail(email);
         if (user!=null){
             log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"该邮箱已注册，请重新输入"));
