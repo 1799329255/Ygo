@@ -38,7 +38,7 @@ public class EmailUtil {
         String code = null;
         try {
             helper = new MimeMessageHelper(mimeMessage, true);
-            helper.setSubject("这是一封测试邮件");
+            helper.setSubject("欢迎注册游戏王综合服务平台");
             helper.setFrom(mailProperties.getUsername());
             helper.setTo(email);
             helper.setSentDate(new Date());

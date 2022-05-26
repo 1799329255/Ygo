@@ -93,6 +93,23 @@ public class UserServiceImpl extends BaseServiceImpl<User,Long, UserExample> imp
     }
 
     @Override
+    public PageInfo<User> findUserInfoPage(User user, String order, Integer pageNum, Integer pageSize) {
+        UserExample userExample = new UserExample()
+                .createCriteria()
+                .when(user.getId()!=null,criteria -> criteria.andIdEqualTo(user.getId()))
+                .when(user.getSex()!=null,criteria -> criteria.andSexEqualTo(user.getSex()))
+                .when(StrUtil.isNotBlank(user.getName()),criteria -> criteria.andNameLike("%" + user.getName() + "%"))
+                .andLogicalDeleted(false)
+                .example()
+                .orderBy(order)
+                .when(pageNum != null && pageSize != null, example -> example.page(pageNum, pageSize));
+        long total = userMapper.countByExample(userExample);
+        List<User> list = userMapper.selectByExample(userExample);
+        List<User> users = list.stream().map(user1 -> getUserInfo(user1.getId())).collect(Collectors.toList());
+        return new PageInfo<>(users,pageNum,pageSize,total);
+    }
+
+    @Override
     public int addUser(User user) {
         int i = userMapper.insert(user);
         user = findByName(user.getName());
@@ -111,20 +128,20 @@ public class UserServiceImpl extends BaseServiceImpl<User,Long, UserExample> imp
     @Override
     public Boolean isRepeat(User user) {
         //如果名字，手机，邮箱都没有，就不重复
-        if (StrUtil.isBlank(user.getName()) && user.getPhone()==null && StrUtil.isBlank(user.getEmail())){
+        if (StrUtil.isNotBlank(user.getName()) && user.getPhone()==null && StrUtil.isNotBlank(user.getEmail())){
             return false;
         }
 
         List<User> users = userMapper.selectByExample(
                 new UserExample()
                         .or()
-                        .when(StrUtil.isBlank(user.getName()),criteria -> criteria.andNameEqualTo(user.getName()))
+                        .when(StrUtil.isNotBlank(user.getName()),criteria -> criteria.andNameEqualTo(user.getName()))
                         .example()
                         .or()
                         .when(user.getPhone()!=null,criteria -> criteria.andPhoneEqualTo(user.getPhone()))
                         .example()
                         .or()
-                        .when(StrUtil.isBlank(user.getEmail()),criteria -> criteria.andEmailEqualTo(user.getEmail()))
+                        .when(StrUtil.isNotBlank(user.getEmail()),criteria -> criteria.andEmailEqualTo(user.getEmail()))
                         .example()
         );
         if (CollectionUtil.isEmpty(users)){
@@ -223,6 +240,36 @@ public class UserServiceImpl extends BaseServiceImpl<User,Long, UserExample> imp
                         .example()
         );
         return new PageInfo<>(users,pageNum,pageSize,count);
+    }
+
+    @Override
+    public int follow(Long fanId, Long followId) {
+        int i = userwithuserMapper.insert(new Userwithuser(fanId, followId));
+        return i;
+    }
+
+    @Override
+    public int unFollow(Long fanId, Long followId) {
+        int i = userwithuserMapper.deleteByExample(
+                new UserwithuserExample()
+                        .createCriteria()
+                        .andFanIdEqualTo(fanId)
+                        .andFollowIdEqualTo(followId)
+                        .example()
+        );
+        return i;
+    }
+
+    @Override
+    public boolean isFollow(Long fanId, Long followId) {
+        Userwithuser userwithuser = userwithuserMapper.selectOneByExample(
+                new UserwithuserExample()
+                        .createCriteria()
+                        .andFanIdEqualTo(fanId)
+                        .andFollowIdEqualTo(followId)
+                        .example()
+        );
+        return userwithuser != null;
     }
 
 }

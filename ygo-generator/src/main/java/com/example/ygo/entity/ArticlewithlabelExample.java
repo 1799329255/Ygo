@@ -3,7 +3,7 @@ package com.example.ygo.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PackageExample {
+public class ArticlewithlabelExample {
     protected String orderByClause;
 
     protected boolean distinct;
@@ -14,7 +14,7 @@ public class PackageExample {
 
     protected Integer rows;
 
-    public PackageExample() {
+    public ArticlewithlabelExample() {
         oredCriteria = new ArrayList<Criteria>();
     }
 
@@ -48,12 +48,12 @@ public class PackageExample {
         return criteria;
     }
 
-    public PackageExample orderBy(String orderByClause) {
+    public ArticlewithlabelExample orderBy(String orderByClause) {
         this.setOrderByClause(orderByClause);
         return this;
     }
 
-    public PackageExample orderBy(String ... orderByClauses) {
+    public ArticlewithlabelExample orderBy(String ... orderByClauses) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < orderByClauses.length; i++) {
             sb.append(orderByClauses[i]);
@@ -87,18 +87,18 @@ public class PackageExample {
     }
 
     public static Criteria newAndCreateCriteria() {
-        PackageExample example = new PackageExample();
+        ArticlewithlabelExample example = new ArticlewithlabelExample();
         return example.createCriteria();
     }
 
-    public PackageExample when(boolean condition, IExampleWhen then) {
+    public ArticlewithlabelExample when(boolean condition, IExampleWhen then) {
         if (condition) {
             then.example(this);
         }
         return this;
     }
 
-    public PackageExample when(boolean condition, IExampleWhen then, IExampleWhen otherwise) {
+    public ArticlewithlabelExample when(boolean condition, IExampleWhen then, IExampleWhen otherwise) {
         if (condition) {
             then.example(this);
         } else {
@@ -107,7 +107,7 @@ public class PackageExample {
         return this;
     }
 
-    public PackageExample distinct(boolean distinct) {
+    public ArticlewithlabelExample distinct(boolean distinct) {
         this.setDistinct(distinct);
         return this;
     }
@@ -128,18 +128,18 @@ public class PackageExample {
         return this.rows;
     }
 
-    public PackageExample limit(Integer rows) {
+    public ArticlewithlabelExample limit(Integer rows) {
         this.rows = rows;
         return this;
     }
 
-    public PackageExample limit(Integer offset, Integer rows) {
+    public ArticlewithlabelExample limit(Integer offset, Integer rows) {
         this.offset = offset;
         this.rows = rows;
         return this;
     }
 
-    public PackageExample page(Integer page, Integer pageSize) {
+    public ArticlewithlabelExample page(Integer page, Integer pageSize) {
         this.offset = (page - 1) * pageSize;
         this.rows = pageSize;
         return this;
@@ -201,7 +201,7 @@ public class PackageExample {
             return (Criteria) this;
         }
 
-        public Criteria andIdEqualToColumn(Package.Column column) {
+        public Criteria andIdEqualToColumn(Articlewithlabel.Column column) {
             addCriterion(new StringBuilder("id = ").append(column.getEscapedColumnName()).toString());
             return (Criteria) this;
         }
@@ -211,7 +211,7 @@ public class PackageExample {
             return (Criteria) this;
         }
 
-        public Criteria andIdNotEqualToColumn(Package.Column column) {
+        public Criteria andIdNotEqualToColumn(Articlewithlabel.Column column) {
             addCriterion(new StringBuilder("id <> ").append(column.getEscapedColumnName()).toString());
             return (Criteria) this;
         }
@@ -221,7 +221,7 @@ public class PackageExample {
             return (Criteria) this;
         }
 
-        public Criteria andIdGreaterThanColumn(Package.Column column) {
+        public Criteria andIdGreaterThanColumn(Articlewithlabel.Column column) {
             addCriterion(new StringBuilder("id > ").append(column.getEscapedColumnName()).toString());
             return (Criteria) this;
         }
@@ -231,7 +231,7 @@ public class PackageExample {
             return (Criteria) this;
         }
 
-        public Criteria andIdGreaterThanOrEqualToColumn(Package.Column column) {
+        public Criteria andIdGreaterThanOrEqualToColumn(Articlewithlabel.Column column) {
             addCriterion(new StringBuilder("id >= ").append(column.getEscapedColumnName()).toString());
             return (Criteria) this;
         }
@@ -241,7 +241,7 @@ public class PackageExample {
             return (Criteria) this;
         }
 
-        public Criteria andIdLessThanColumn(Package.Column column) {
+        public Criteria andIdLessThanColumn(Articlewithlabel.Column column) {
             addCriterion(new StringBuilder("id < ").append(column.getEscapedColumnName()).toString());
             return (Criteria) this;
         }
@@ -251,7 +251,7 @@ public class PackageExample {
             return (Criteria) this;
         }
 
-        public Criteria andIdLessThanOrEqualToColumn(Package.Column column) {
+        public Criteria andIdLessThanOrEqualToColumn(Articlewithlabel.Column column) {
             addCriterion(new StringBuilder("id <= ").append(column.getEscapedColumnName()).toString());
             return (Criteria) this;
         }
@@ -276,206 +276,196 @@ public class PackageExample {
             return (Criteria) this;
         }
 
-        public Criteria andNameIsNull() {
-            addCriterion("name is null");
+        public Criteria andArticleIdIsNull() {
+            addCriterion("article_id is null");
             return (Criteria) this;
         }
 
-        public Criteria andNameIsNotNull() {
-            addCriterion("name is not null");
+        public Criteria andArticleIdIsNotNull() {
+            addCriterion("article_id is not null");
             return (Criteria) this;
         }
 
-        public Criteria andNameEqualTo(String value) {
-            addCriterion("name =", value, "name");
+        public Criteria andArticleIdEqualTo(Long value) {
+            addCriterion("article_id =", value, "articleId");
             return (Criteria) this;
         }
 
-        public Criteria andNameEqualToColumn(Package.Column column) {
-            addCriterion(new StringBuilder("name = ").append(column.getEscapedColumnName()).toString());
+        public Criteria andArticleIdEqualToColumn(Articlewithlabel.Column column) {
+            addCriterion(new StringBuilder("article_id = ").append(column.getEscapedColumnName()).toString());
             return (Criteria) this;
         }
 
-        public Criteria andNameNotEqualTo(String value) {
-            addCriterion("name <>", value, "name");
+        public Criteria andArticleIdNotEqualTo(Long value) {
+            addCriterion("article_id <>", value, "articleId");
             return (Criteria) this;
         }
 
-        public Criteria andNameNotEqualToColumn(Package.Column column) {
-            addCriterion(new StringBuilder("name <> ").append(column.getEscapedColumnName()).toString());
+        public Criteria andArticleIdNotEqualToColumn(Articlewithlabel.Column column) {
+            addCriterion(new StringBuilder("article_id <> ").append(column.getEscapedColumnName()).toString());
             return (Criteria) this;
         }
 
-        public Criteria andNameGreaterThan(String value) {
-            addCriterion("name >", value, "name");
+        public Criteria andArticleIdGreaterThan(Long value) {
+            addCriterion("article_id >", value, "articleId");
             return (Criteria) this;
         }
 
-        public Criteria andNameGreaterThanColumn(Package.Column column) {
-            addCriterion(new StringBuilder("name > ").append(column.getEscapedColumnName()).toString());
+        public Criteria andArticleIdGreaterThanColumn(Articlewithlabel.Column column) {
+            addCriterion(new StringBuilder("article_id > ").append(column.getEscapedColumnName()).toString());
             return (Criteria) this;
         }
 
-        public Criteria andNameGreaterThanOrEqualTo(String value) {
-            addCriterion("name >=", value, "name");
+        public Criteria andArticleIdGreaterThanOrEqualTo(Long value) {
+            addCriterion("article_id >=", value, "articleId");
             return (Criteria) this;
         }
 
-        public Criteria andNameGreaterThanOrEqualToColumn(Package.Column column) {
-            addCriterion(new StringBuilder("name >= ").append(column.getEscapedColumnName()).toString());
+        public Criteria andArticleIdGreaterThanOrEqualToColumn(Articlewithlabel.Column column) {
+            addCriterion(new StringBuilder("article_id >= ").append(column.getEscapedColumnName()).toString());
             return (Criteria) this;
         }
 
-        public Criteria andNameLessThan(String value) {
-            addCriterion("name <", value, "name");
+        public Criteria andArticleIdLessThan(Long value) {
+            addCriterion("article_id <", value, "articleId");
             return (Criteria) this;
         }
 
-        public Criteria andNameLessThanColumn(Package.Column column) {
-            addCriterion(new StringBuilder("name < ").append(column.getEscapedColumnName()).toString());
+        public Criteria andArticleIdLessThanColumn(Articlewithlabel.Column column) {
+            addCriterion(new StringBuilder("article_id < ").append(column.getEscapedColumnName()).toString());
             return (Criteria) this;
         }
 
-        public Criteria andNameLessThanOrEqualTo(String value) {
-            addCriterion("name <=", value, "name");
+        public Criteria andArticleIdLessThanOrEqualTo(Long value) {
+            addCriterion("article_id <=", value, "articleId");
             return (Criteria) this;
         }
 
-        public Criteria andNameLessThanOrEqualToColumn(Package.Column column) {
-            addCriterion(new StringBuilder("name <= ").append(column.getEscapedColumnName()).toString());
+        public Criteria andArticleIdLessThanOrEqualToColumn(Articlewithlabel.Column column) {
+            addCriterion(new StringBuilder("article_id <= ").append(column.getEscapedColumnName()).toString());
             return (Criteria) this;
         }
 
-        public Criteria andNameLike(String value) {
-            addCriterion("name like", value, "name");
+        public Criteria andArticleIdIn(List<Long> values) {
+            addCriterion("article_id in", values, "articleId");
             return (Criteria) this;
         }
 
-        public Criteria andNameNotLike(String value) {
-            addCriterion("name not like", value, "name");
+        public Criteria andArticleIdNotIn(List<Long> values) {
+            addCriterion("article_id not in", values, "articleId");
             return (Criteria) this;
         }
 
-        public Criteria andNameIn(List<String> values) {
-            addCriterion("name in", values, "name");
+        public Criteria andArticleIdBetween(Long value1, Long value2) {
+            addCriterion("article_id between", value1, value2, "articleId");
             return (Criteria) this;
         }
 
-        public Criteria andNameNotIn(List<String> values) {
-            addCriterion("name not in", values, "name");
+        public Criteria andArticleIdNotBetween(Long value1, Long value2) {
+            addCriterion("article_id not between", value1, value2, "articleId");
             return (Criteria) this;
         }
 
-        public Criteria andNameBetween(String value1, String value2) {
-            addCriterion("name between", value1, value2, "name");
+        public Criteria andLabelIdIsNull() {
+            addCriterion("label_id is null");
             return (Criteria) this;
         }
 
-        public Criteria andNameNotBetween(String value1, String value2) {
-            addCriterion("name not between", value1, value2, "name");
+        public Criteria andLabelIdIsNotNull() {
+            addCriterion("label_id is not null");
             return (Criteria) this;
         }
 
-        public Criteria andStatusIsNull() {
-            addCriterion("status is null");
+        public Criteria andLabelIdEqualTo(Long value) {
+            addCriterion("label_id =", value, "labelId");
             return (Criteria) this;
         }
 
-        public Criteria andStatusIsNotNull() {
-            addCriterion("status is not null");
+        public Criteria andLabelIdEqualToColumn(Articlewithlabel.Column column) {
+            addCriterion(new StringBuilder("label_id = ").append(column.getEscapedColumnName()).toString());
             return (Criteria) this;
         }
 
-        public Criteria andStatusEqualTo(Integer value) {
-            addCriterion("status =", value, "status");
+        public Criteria andLabelIdNotEqualTo(Long value) {
+            addCriterion("label_id <>", value, "labelId");
             return (Criteria) this;
         }
 
-        public Criteria andStatusEqualToColumn(Package.Column column) {
-            addCriterion(new StringBuilder("status = ").append(column.getEscapedColumnName()).toString());
+        public Criteria andLabelIdNotEqualToColumn(Articlewithlabel.Column column) {
+            addCriterion(new StringBuilder("label_id <> ").append(column.getEscapedColumnName()).toString());
             return (Criteria) this;
         }
 
-        public Criteria andStatusNotEqualTo(Integer value) {
-            addCriterion("status <>", value, "status");
+        public Criteria andLabelIdGreaterThan(Long value) {
+            addCriterion("label_id >", value, "labelId");
             return (Criteria) this;
         }
 
-        public Criteria andStatusNotEqualToColumn(Package.Column column) {
-            addCriterion(new StringBuilder("status <> ").append(column.getEscapedColumnName()).toString());
+        public Criteria andLabelIdGreaterThanColumn(Articlewithlabel.Column column) {
+            addCriterion(new StringBuilder("label_id > ").append(column.getEscapedColumnName()).toString());
             return (Criteria) this;
         }
 
-        public Criteria andStatusGreaterThan(Integer value) {
-            addCriterion("status >", value, "status");
+        public Criteria andLabelIdGreaterThanOrEqualTo(Long value) {
+            addCriterion("label_id >=", value, "labelId");
             return (Criteria) this;
         }
 
-        public Criteria andStatusGreaterThanColumn(Package.Column column) {
-            addCriterion(new StringBuilder("status > ").append(column.getEscapedColumnName()).toString());
+        public Criteria andLabelIdGreaterThanOrEqualToColumn(Articlewithlabel.Column column) {
+            addCriterion(new StringBuilder("label_id >= ").append(column.getEscapedColumnName()).toString());
             return (Criteria) this;
         }
 
-        public Criteria andStatusGreaterThanOrEqualTo(Integer value) {
-            addCriterion("status >=", value, "status");
+        public Criteria andLabelIdLessThan(Long value) {
+            addCriterion("label_id <", value, "labelId");
             return (Criteria) this;
         }
 
-        public Criteria andStatusGreaterThanOrEqualToColumn(Package.Column column) {
-            addCriterion(new StringBuilder("status >= ").append(column.getEscapedColumnName()).toString());
+        public Criteria andLabelIdLessThanColumn(Articlewithlabel.Column column) {
+            addCriterion(new StringBuilder("label_id < ").append(column.getEscapedColumnName()).toString());
             return (Criteria) this;
         }
 
-        public Criteria andStatusLessThan(Integer value) {
-            addCriterion("status <", value, "status");
+        public Criteria andLabelIdLessThanOrEqualTo(Long value) {
+            addCriterion("label_id <=", value, "labelId");
             return (Criteria) this;
         }
 
-        public Criteria andStatusLessThanColumn(Package.Column column) {
-            addCriterion(new StringBuilder("status < ").append(column.getEscapedColumnName()).toString());
+        public Criteria andLabelIdLessThanOrEqualToColumn(Articlewithlabel.Column column) {
+            addCriterion(new StringBuilder("label_id <= ").append(column.getEscapedColumnName()).toString());
             return (Criteria) this;
         }
 
-        public Criteria andStatusLessThanOrEqualTo(Integer value) {
-            addCriterion("status <=", value, "status");
+        public Criteria andLabelIdIn(List<Long> values) {
+            addCriterion("label_id in", values, "labelId");
             return (Criteria) this;
         }
 
-        public Criteria andStatusLessThanOrEqualToColumn(Package.Column column) {
-            addCriterion(new StringBuilder("status <= ").append(column.getEscapedColumnName()).toString());
+        public Criteria andLabelIdNotIn(List<Long> values) {
+            addCriterion("label_id not in", values, "labelId");
             return (Criteria) this;
         }
 
-        public Criteria andStatusIn(List<Integer> values) {
-            addCriterion("status in", values, "status");
+        public Criteria andLabelIdBetween(Long value1, Long value2) {
+            addCriterion("label_id between", value1, value2, "labelId");
             return (Criteria) this;
         }
 
-        public Criteria andStatusNotIn(List<Integer> values) {
-            addCriterion("status not in", values, "status");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatusBetween(Integer value1, Integer value2) {
-            addCriterion("status between", value1, value2, "status");
-            return (Criteria) this;
-        }
-
-        public Criteria andStatusNotBetween(Integer value1, Integer value2) {
-            addCriterion("status not between", value1, value2, "status");
+        public Criteria andLabelIdNotBetween(Long value1, Long value2) {
+            addCriterion("label_id not between", value1, value2, "labelId");
             return (Criteria) this;
         }
     }
 
     public static class Criteria extends GeneratedCriteria {
-        private PackageExample example;
+        private ArticlewithlabelExample example;
 
-        protected Criteria(PackageExample example) {
+        protected Criteria(ArticlewithlabelExample example) {
             super();
             this.example = example;
         }
 
-        public PackageExample example() {
+        public ArticlewithlabelExample example() {
             return this.example;
         }
 
@@ -501,10 +491,6 @@ public class PackageExample {
                 otherwise.criteria(this);
             }
             return this;
-        }
-
-        public Criteria andLogicalDeleted(boolean deleted) {
-            return deleted ? andStatusEqualTo(Package.Status.IS_DELETED.value()) : andStatusNotEqualTo(Package.Status.IS_DELETED.value());
         }
 
         @Deprecated
@@ -604,6 +590,6 @@ public class PackageExample {
     }
 
     public interface IExampleWhen {
-        void example(com.example.ygo.entity.PackageExample example);
+        void example(com.example.ygo.entity.ArticlewithlabelExample example);
     }
 }

@@ -11,6 +11,6 @@ public interface CardMapper extends BaseMapper<Card,Long,CardExample>{
 
     List<Card> findCardInfoByExample(CardExample cardExample);
 
-    List<Card> findCardByExample(CardExample cardExample);
+    Long countInfoByExample(CardExample cardExample);
 
 }

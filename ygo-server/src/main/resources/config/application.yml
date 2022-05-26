@@ -64,6 +64,10 @@ spring:
       # 测试连接是否可用的查询语句
       connection-test-query: SELECT 1
 
+  servlet:
+    multipart:
+      enabled: true #开启文件上传
+
   redis:
     #超时时间
     timeout: 10000ms

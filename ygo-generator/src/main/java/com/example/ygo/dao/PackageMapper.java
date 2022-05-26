@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PackageMapper extends BaseMapper<Package,Long,PackageExample>{
 
+    List<Package> findPackageInfoByExample(PackageExample packageExample);
+
 }

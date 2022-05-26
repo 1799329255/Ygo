@@ -124,7 +124,7 @@ public class JwtTokenUtil {
      * @param token
      * @return
      */
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         Date expireDate = getExpiredDateFromToken(token);
         return expireDate.before(new Date());
     }
@@ -156,7 +156,11 @@ public class JwtTokenUtil {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (Exception e) {
-            e.printStackTrace();
+            if (e.getMessage().contains("JWT expired")){
+                System.out.println("账号未登录或已过期");
+            } else {
+                e.printStackTrace();
+            }
         }
         return claims;
     }

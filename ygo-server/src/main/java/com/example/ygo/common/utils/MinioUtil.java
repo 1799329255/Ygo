@@ -32,16 +32,8 @@ import java.util.List;
 @Component
 public class MinioUtil {
 
-    private static MinioClient minioClient;
-
-    public MinioClient getMinioClient() {
-        return minioClient;
-    }
-
     @Resource
-    public void setMinioClient(MinioClient minioClient) {
-        com.example.ygo.common.utils.MinioUtil.minioClient = minioClient;
-    }
+    private MinioClient minioClient;
 
     private static final int DEFAULT_EXPIRY_TIME = 7 * 24 * 3600;
 
@@ -52,7 +44,7 @@ public class MinioUtil {
      * @return
      */
     @SneakyThrows
-    public static boolean bucketExists(String bucketName) {
+    public boolean bucketExists(String bucketName) {
         boolean flag = false;
         flag = minioClient.bucketExists(bucketName);
         if (flag) {
@@ -65,12 +57,36 @@ public class MinioUtil {
      * 创建存储桶
      *
      * @param bucketName 存储桶名称
+     * @description 存储桶的命名定义规则为：
+     * 1.存储桶名称必须介于 3 到 63 个字符之间
+     * 2.存储桶名称只能由小写字母、数字、句点 (.) 和连字符 (-) 组成
+     * 3.存储桶名称必须以字母或数字开头和结尾
+     * 4.存储桶名称不得采用 IP 地址格式（例如，192.168.5.4）
      */
     @SneakyThrows
-    public static boolean makeBucket(String bucketName) {
+    public boolean makeBucket(String bucketName) {
         boolean flag = bucketExists(bucketName);
         if (!flag) {
             minioClient.makeBucket(bucketName);
+            String policyJson = "{\n" +
+                    "\t\"Version\": \"2012-10-17\",\n" +
+                    "\t\"Statement\": [{\n" +
+                    "\t\t\"Effect\": \"Allow\",\n" +
+                    "\t\t\"Principal\": {\n" +
+                    "\t\t\t\"AWS\": [\"*\"]\n" +
+                    "\t\t},\n" +
+                    "\t\t\"Action\": [\"s3:GetBucketLocation\", \"s3:ListBucket\", \"s3:ListBucketMultipartUploads\"],\n" +
+                    "\t\t\"Resource\": [\"arn:aws:s3:::" + bucketName + "\"]\n" +
+                    "\t}, {\n" +
+                    "\t\t\"Effect\": \"Allow\",\n" +
+                    "\t\t\"Principal\": {\n" +
+                    "\t\t\t\"AWS\": [\"*\"]\n" +
+                    "\t\t},\n" +
+                    "\t\t\"Action\": [\"s3:AbortMultipartUpload\", \"s3:DeleteObject\", \"s3:GetObject\", \"s3:ListMultipartUploadParts\", \"s3:PutObject\"],\n" +
+                    "\t\t\"Resource\": [\"arn:aws:s3:::" + bucketName + "/*\"]\n" +
+                    "\t}]\n" +
+                    "}\n";
+            minioClient.setBucketPolicy(bucketName,policyJson);
             return true;
         } else {
             return false;
@@ -83,7 +99,7 @@ public class MinioUtil {
      * @return
      */
     @SneakyThrows
-    public static List<String> listBucketNames() {
+    public List<String> listBucketNames() {
         List<Bucket> bucketList = listBuckets();
         List<String> bucketListName = new ArrayList<>();
         for (Bucket bucket : bucketList) {
@@ -98,7 +114,7 @@ public class MinioUtil {
      * @return
      */
     @SneakyThrows
-    public static List<Bucket> listBuckets() {
+    public List<Bucket> listBuckets() {
         return minioClient.listBuckets();
     }
 
@@ -109,7 +125,7 @@ public class MinioUtil {
      * @return
      */
     @SneakyThrows
-    public static boolean removeBucket(String bucketName) {
+    public boolean removeBucket(String bucketName) {
         boolean flag = bucketExists(bucketName);
         if (flag) {
             Iterable<Result<Item>> myObjects = listObjects(bucketName);
@@ -138,7 +154,7 @@ public class MinioUtil {
      * @return
      */
     @SneakyThrows
-    public static List<String> listObjectNames(String bucketName) {
+    public List<String> listObjectNames(String bucketName) {
         List<String> listObjectNames = new ArrayList<>();
         boolean flag = bucketExists(bucketName);
         if (flag) {
@@ -158,7 +174,7 @@ public class MinioUtil {
      * @return
      */
     @SneakyThrows
-    public static Iterable<Result<Item>> listObjects(String bucketName) {
+    public Iterable<Result<Item>> listObjects(String bucketName) {
         boolean flag = bucketExists(bucketName);
         if (flag) {
             return minioClient.listObjects(bucketName);
@@ -175,7 +191,7 @@ public class MinioUtil {
      * @return
      */
     @SneakyThrows
-    public static boolean putObject(String bucketName, String objectName, String fileName) {
+    public boolean putObject(String bucketName, String objectName, String fileName) {
         boolean flag = bucketExists(bucketName);
         if (flag) {
             minioClient.putObject(bucketName, objectName, fileName, null);
@@ -195,7 +211,7 @@ public class MinioUtil {
      * @param multipartFile
      */
     @SneakyThrows
-    public static void putObject(String bucketName, MultipartFile multipartFile, String filename) {
+    public void putObject(String bucketName, MultipartFile multipartFile, String filename) {
         PutObjectOptions putObjectOptions = new PutObjectOptions(multipartFile.getSize(), PutObjectOptions.MIN_MULTIPART_SIZE);
         putObjectOptions.setContentType(multipartFile.getContentType());
         minioClient.putObject(bucketName, filename, multipartFile.getInputStream(), putObjectOptions);
@@ -210,7 +226,7 @@ public class MinioUtil {
      * @return
      */
     @SneakyThrows
-    public static boolean putObject(String bucketName, String objectName, InputStream stream) {
+    public boolean putObject(String bucketName, String objectName, InputStream stream) {
         boolean flag = bucketExists(bucketName);
         if (flag) {
             minioClient.putObject(bucketName, objectName, stream, new PutObjectOptions(stream.available(), -1));
@@ -230,7 +246,7 @@ public class MinioUtil {
      * @return
      */
     @SneakyThrows
-    public static InputStream getObject(String bucketName, String objectName) {
+    public InputStream getObject(String bucketName, String objectName) {
         boolean flag = bucketExists(bucketName);
         if (flag) {
             ObjectStat statObject = statObject(bucketName, objectName);
@@ -252,7 +268,7 @@ public class MinioUtil {
      * @return
      */
     @SneakyThrows
-    public static InputStream getObject(String bucketName, String objectName, long offset, Long length) {
+    public InputStream getObject(String bucketName, String objectName, long offset, Long length) {
         boolean flag = bucketExists(bucketName);
         if (flag) {
             ObjectStat statObject = statObject(bucketName, objectName);
@@ -273,7 +289,7 @@ public class MinioUtil {
      * @return
      */
     @SneakyThrows
-    public static boolean getObject(String bucketName, String objectName, String fileName) {
+    public boolean getObject(String bucketName, String objectName, String fileName) {
         boolean flag = bucketExists(bucketName);
         if (flag) {
             ObjectStat statObject = statObject(bucketName, objectName);
@@ -292,7 +308,7 @@ public class MinioUtil {
      * @param objectName 存储桶里的对象名称
      */
     @SneakyThrows
-    public static boolean removeObject(String bucketName, String objectName) {
+    public boolean removeObject(String bucketName, String objectName) {
         boolean flag = bucketExists(bucketName);
         if (flag) {
             minioClient.removeObject(bucketName, objectName);
@@ -309,7 +325,7 @@ public class MinioUtil {
      * @return
      */
     @SneakyThrows
-    public static List<String> removeObject(String bucketName, List<String> objectNames) {
+    public List<String> removeObject(String bucketName, List<String> objectNames) {
         List<String> deleteErrorNames = new ArrayList<>();
         boolean flag = bucketExists(bucketName);
         if (flag) {
@@ -332,7 +348,7 @@ public class MinioUtil {
      * @return
      */
     @SneakyThrows
-    public static String presignedGetObject(String bucketName, String objectName, Integer expires) {
+    public String presignedGetObject(String bucketName, String objectName, Integer expires) {
         boolean flag = bucketExists(bucketName);
         String url = "";
         if (flag) {
@@ -355,7 +371,7 @@ public class MinioUtil {
      * @return
      */
     @SneakyThrows
-    public static String presignedPutObject(String bucketName, String objectName, Integer expires) {
+    public String presignedPutObject(String bucketName, String objectName, Integer expires) {
         boolean flag = bucketExists(bucketName);
         String url = "";
         if (flag) {
@@ -376,7 +392,7 @@ public class MinioUtil {
      * @return
      */
     @SneakyThrows
-    public static ObjectStat statObject(String bucketName, String objectName) {
+    public ObjectStat statObject(String bucketName, String objectName) {
         boolean flag = bucketExists(bucketName);
         if (flag) {
             ObjectStat statObject = minioClient.statObject(bucketName, objectName);
@@ -393,7 +409,7 @@ public class MinioUtil {
      * @return
      */
     @SneakyThrows
-    public static String getObjectUrl(String bucketName, String objectName) {
+    public String getObjectUrl(String bucketName, String objectName) {
         boolean flag = bucketExists(bucketName);
         String url = "";
         if (flag) {
@@ -404,7 +420,7 @@ public class MinioUtil {
 
 
 
-    public static void downloadFile(String bucketName, String fileName, String originalName, HttpServletResponse response) {
+    public void downloadFile(String bucketName, String fileName, String originalName, HttpServletResponse response) {
         try {
 
             InputStream file = minioClient.getObject(bucketName, fileName);

@@ -98,6 +98,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/login",
                 "/user/register",
                 "/user/logout",
+                "/user/loginAdmin",
+                "/*/find*",
+                "/*/get*",
                 "/css/**",
                 "/js/**",
                 "/img/**",
@@ -111,6 +114,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/v2/api-docs/**",
                 "/captcha",
                 "/email",
+                "/emailRegister",
                 "/ws/**");
     }
 

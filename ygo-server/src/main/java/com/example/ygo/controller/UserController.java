@@ -6,30 +6,32 @@ import com.example.ygo.common.exception.GlobalException;
 import com.example.ygo.common.utils.JwtTokenUtil;
 import com.example.ygo.common.utils.LogUtil;
 import com.example.ygo.common.utils.ResponseMsgUtil;
+import com.example.ygo.entity.Article;
+import com.example.ygo.entity.MultipartFileInfo;
 import com.example.ygo.entity.ResponseData;
 import com.example.ygo.entity.User;
 import com.example.ygo.service.BaseService;
-import com.example.ygo.service.RoleService;
+import com.example.ygo.service.MinioService;
 import com.example.ygo.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,12 +53,16 @@ public class UserController extends BaseController<User,Long>{
     private UserService userService;
     @Resource
     private UserDetailsService userDetailsService;
+
     @Resource
     private PasswordEncoder passwordEncoder;
     @Resource
     private JwtTokenUtil jwtTokenUtil;
     @Value("${jwt.tokenHead}")
     private String tokenHead;
+
+    @Resource
+    private MinioService minioService;
 
     @Override
     public BaseService<User, Long> getBaseService() {
@@ -143,6 +149,67 @@ public class UserController extends BaseController<User,Long>{
         }
     }
 
+    @RequestMapping(value = "/loginAdmin", method = RequestMethod.POST)
+    @ResponseBody
+    @ApiOperation(value = "登录管理员")
+    public ResponseData loginAdmin(@RequestBody String reqBody, HttpServletRequest request){
+        try {
+            //匹配验证码
+            JSONObject jsonObject = JSONObject.parseObject(reqBody);
+            String code = jsonObject.getString("code");
+            String captcha = (String) request.getSession().getAttribute("captcha");
+            if(StrUtil.isBlankIfStr(code) || !code.equalsIgnoreCase(captcha)){
+                log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],
+                        new ResponseData("1007","验证码错误，请重新输入")));
+                return ResponseMsgUtil.error(GlobalException.CODE_ERROR);
+            }
+            //登录
+            String username = jsonObject.getString("username");
+            String password = jsonObject.getString("password");
+            User user = (User) userDetailsService.loadUserByUsername(username);
+            if (user==null || !passwordEncoder.matches(password,user.getPassword())){
+                log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],
+                        new ResponseData("1005","用户名或密码错误")));
+                return ResponseMsgUtil.error(GlobalException.USER_LOGIN_ERROR);
+            }
+            if (!user.isEnabled()){
+                log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],
+                        new ResponseData("1006","账号被禁用，请联系管理员")));
+                return ResponseMsgUtil.error(GlobalException.USER_NOT_ENABLED_ERROR);
+            }
+            User userInfo = userService.getUserInfo(user.getId());
+            for (GrantedAuthority authority:userInfo.getAuthorities()){
+                if (authority.getAuthority().equals("ROLE_admin")){
+                    //更新用户(密码设为null)
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user,
+                            null,user.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    //返回token
+                    String token = jwtTokenUtil.createToken(user);
+                    Map<String, Object> tokenMap = new HashMap<>();
+                    tokenMap.put("tokenHead",tokenHead);
+                    tokenMap.put("token",token);
+                    return ResponseMsgUtil.success(tokenMap);
+                }
+            }
+            return ResponseMsgUtil.error("不是管理员，请重新登录");
+        } catch (Exception e){
+            log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],GlobalException.UNKNOWN_ERROR), e);
+            return ResponseMsgUtil.error(GlobalException.UNKNOWN_ERROR);
+        }
+    }
+
+    @Override
+    public ResponseData findById(Long id) {
+        if (id==null){
+            log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"请求参数校验失败"));
+            return ResponseMsgUtil.error(GlobalException.REQ_PARAMS_ERROR);
+        }
+        User user = userService.getUserInfo(id);
+        user.setPassword(null);
+        return ResponseMsgUtil.success(user);
+    }
+
     @RequestMapping(value = "/getUserInfo", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "获得当前登录用户详情")
@@ -161,6 +228,28 @@ public class UserController extends BaseController<User,Long>{
             log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],GlobalException.UNKNOWN_ERROR), e);
             return ResponseMsgUtil.error(GlobalException.UNKNOWN_ERROR);
         }
+    }
+
+    @RequestMapping(value = "/findUserInfoPage", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "获取用户列表详情(分页)")
+    public ResponseData findUserInfoPage(Long id,
+                                         String name,
+                                         Integer sex,
+                                         String order,
+                                         Integer pageNum,
+                                         Integer pageSize){
+        if (pageNum==null || pageSize==null
+                || pageNum <= 0 || pageSize <= 0){
+            log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"请求参数校验失败"));
+            return ResponseMsgUtil.error(GlobalException.REQ_PARAMS_ERROR);
+        }
+
+        User user = new User();
+        user.setId(id);
+        user.setName(name);
+        user.setSex(sex);
+        return ResponseMsgUtil.success(userService.findUserInfoPage(user,order,pageNum,pageSize));
     }
 
     @Override
@@ -194,14 +283,13 @@ public class UserController extends BaseController<User,Long>{
                 log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"该用户不存在，请重新输入"));
                 return ResponseMsgUtil.error("该用户不存在，请重新输入");
             }
-            if (userService.isRepeat(user)) {
-                log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"用户已存在，请重新输入"));
-                return ResponseMsgUtil.error("用户已存在，请重新输入");
-            }
+
             oldUser.setName(user.getName());
             oldUser.setAge(user.getAge());
             oldUser.setPic(user.getPic());
             oldUser.setSex(user.getSex());
+            oldUser.setPhone(user.getPhone());
+            oldUser.setEmail(user.getEmail());
             oldUser.setAddress(user.getAddress());
             oldUser.setUpdateTime(new Date());
             return ResponseMsgUtil.success(getBaseService().update(oldUser));
@@ -214,9 +302,14 @@ public class UserController extends BaseController<User,Long>{
     @RequestMapping(value = "/updatePassword", method = RequestMethod.POST)
     @ResponseBody
     @ApiOperation(value = "修改密码")
-    public ResponseData updatePassword(Long id,String password,String code,HttpServletRequest request) {
+    public ResponseData updatePassword(@RequestBody String reqBody,HttpServletRequest request) {
         try {
-            if (id==null || StrUtil.isBlank(password)){
+            JSONObject jsonObject = JSONObject.parseObject(reqBody);
+            Long id = jsonObject.getLong("id");
+            String password = jsonObject.getString("password");
+            String code = jsonObject.getString("code");
+
+            if (id==null || StrUtil.isBlank(password) || StrUtil.isBlank(code)){
                 log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"请求参数校验失败"));
                 return ResponseMsgUtil.error(GlobalException.REQ_PARAMS_ERROR);
             }
@@ -243,9 +336,14 @@ public class UserController extends BaseController<User,Long>{
     @RequestMapping(value = "/updatePhone", method = RequestMethod.POST)
     @ResponseBody
     @ApiOperation(value = "修改手机")
-    public ResponseData updatePhone(Long id,Long phone,String code,HttpServletRequest request) {
+    public ResponseData updatePhone(@RequestBody String reqBody,HttpServletRequest request) {
         try {
-            if (id==null || phone==null){
+            JSONObject jsonObject = JSONObject.parseObject(reqBody);
+            Long id = jsonObject.getLong("id");
+            Long phone = jsonObject.getLong("phone");
+            String code = jsonObject.getString("code");
+
+            if (id==null || phone==null || StrUtil.isBlank(code)){
                 log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"请求参数校验失败"));
                 return ResponseMsgUtil.error(GlobalException.REQ_PARAMS_ERROR);
             }
@@ -276,9 +374,14 @@ public class UserController extends BaseController<User,Long>{
     @RequestMapping(value = "/updateEmail", method = RequestMethod.POST)
     @ResponseBody
     @ApiOperation(value = "修改邮箱")
-    public ResponseData updateEmail(Long id,String email,String code,HttpServletRequest request) {
+    public ResponseData updateEmail(@RequestBody String reqBody,HttpServletRequest request) {
         try {
-            if (id==null || StrUtil.isBlank(email)){
+            JSONObject jsonObject = JSONObject.parseObject(reqBody);
+            Long id = jsonObject.getLong("id");
+            String email = jsonObject.getString("email");
+            String code = jsonObject.getString("code");
+
+            if (id==null || StrUtil.isBlank(email) || StrUtil.isBlank(code)){
                 log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"请求参数校验失败"));
                 return ResponseMsgUtil.error(GlobalException.REQ_PARAMS_ERROR);
             }
@@ -300,6 +403,37 @@ public class UserController extends BaseController<User,Long>{
             user.setEmail(email);
             user.setUpdateTime(new Date());
             return ResponseMsgUtil.success(userService.update(user));
+        } catch (Exception e){
+            log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],GlobalException.UNKNOWN_ERROR), e);
+            return ResponseMsgUtil.error(GlobalException.UNKNOWN_ERROR);
+        }
+    }
+
+    @RequestMapping(value = "/updatePic", method = RequestMethod.POST)
+    @ResponseBody
+    @ApiOperation(value = "更新用户头像")
+    public ResponseData updatePic(Long id, MultipartFile file) {
+        try {
+            if (file==null || id==null){
+                log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"请求参数校验失败"));
+                return ResponseMsgUtil.error(GlobalException.REQ_PARAMS_ERROR);
+            }
+            User user = userService.findById(id);
+            if (user==null){
+                log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"该用户不存在，请重新输入"));
+                return ResponseMsgUtil.error("该用户不存在，请重新输入");
+            }
+            //指定桶名
+            String bucketName = "user-" + id.toString();
+            //移除原来的文件
+            minioService.removeObject(bucketName,user.getPic());
+            //上传新的文件并指定前缀
+            MultipartFileInfo multipartFileInfo = minioService.upload(bucketName, file,"avatar");
+            user.setPic(multipartFileInfo.getFileUrl());
+            user.setUpdateTime(new Date());
+            //更新数据库中用户信息
+            userService.update(user);
+            return ResponseMsgUtil.success(multipartFileInfo);
         } catch (Exception e){
             log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],GlobalException.UNKNOWN_ERROR), e);
             return ResponseMsgUtil.error(GlobalException.UNKNOWN_ERROR);
@@ -367,6 +501,89 @@ public class UserController extends BaseController<User,Long>{
                 return ResponseMsgUtil.error(GlobalException.REQ_PARAMS_ERROR);
             }
             return ResponseMsgUtil.success(userService.findFollowsPageByUserId(id,pageNum,pageSize));
+        } catch (Exception e){
+            log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],GlobalException.UNKNOWN_ERROR), e);
+            return ResponseMsgUtil.error(GlobalException.UNKNOWN_ERROR);
+        }
+    }
+
+    @RequestMapping(value = "/follow", method = RequestMethod.POST)
+    @ResponseBody
+    @ApiOperation(value = "关注某用户")
+    public ResponseData follow(Long fanId,Long followId){
+        try {
+            if (fanId==null || followId==null){
+                log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"请求参数校验失败"));
+                return ResponseMsgUtil.error(GlobalException.REQ_PARAMS_ERROR);
+            }
+            User fan = userService.findById(fanId);
+            if (fan==null){
+                log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"该粉丝不存在，请重新输入"));
+                return ResponseMsgUtil.error("该粉丝不存在，请重新输入");
+            }
+            User follow = userService.findById(followId);
+            if (follow==null){
+                log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"该用户不存在，请重新输入"));
+                return ResponseMsgUtil.error("该用户不存在，请重新输入");
+            }
+            return ResponseMsgUtil.success(userService.follow(fanId, followId));
+        } catch (Exception e){
+            log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],GlobalException.UNKNOWN_ERROR), e);
+            return ResponseMsgUtil.error(GlobalException.UNKNOWN_ERROR);
+        }
+    }
+
+    @RequestMapping(value = "/unFollow", method = RequestMethod.POST)
+    @ResponseBody
+    @ApiOperation(value = "取消关注某用户")
+    public ResponseData unFollow(Long fanId,Long followId){
+        try {
+            if (fanId==null || followId==null){
+                log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"请求参数校验失败"));
+                return ResponseMsgUtil.error(GlobalException.REQ_PARAMS_ERROR);
+            }
+            User fan = userService.findById(fanId);
+            if (fan==null){
+                log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"该粉丝不存在，请重新输入"));
+                return ResponseMsgUtil.error("该粉丝不存在，请重新输入");
+            }
+            User follow = userService.findById(followId);
+            if (follow==null){
+                log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"该用户不存在，请重新输入"));
+                return ResponseMsgUtil.error("该用户不存在，请重新输入");
+            }
+            int i = userService.unFollow(fanId, followId);
+            if (i==0){
+                log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"你还没有关注该用户"));
+                return ResponseMsgUtil.error("你还没有关注该用户");
+            }
+            return ResponseMsgUtil.success(i);
+        } catch (Exception e){
+            log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],GlobalException.UNKNOWN_ERROR), e);
+            return ResponseMsgUtil.error(GlobalException.UNKNOWN_ERROR);
+        }
+    }
+
+    @RequestMapping(value = "/isFollow", method = RequestMethod.GET)
+    @ResponseBody
+    @ApiOperation(value = "是否关注某用户")
+    public ResponseData isFollow(Long fanId,Long followId){
+        try {
+            if (fanId==null || followId==null){
+                log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"请求参数校验失败"));
+                return ResponseMsgUtil.error(GlobalException.REQ_PARAMS_ERROR);
+            }
+            User fan = userService.findById(fanId);
+            if (fan==null){
+                log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"该粉丝不存在，请重新输入"));
+                return ResponseMsgUtil.error("该粉丝不存在，请重新输入");
+            }
+            User follow = userService.findById(followId);
+            if (follow==null){
+                log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"该用户不存在，请重新输入"));
+                return ResponseMsgUtil.error("该用户不存在，请重新输入");
+            }
+            return ResponseMsgUtil.success(userService.isFollow(fanId, followId));
         } catch (Exception e){
             log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],GlobalException.UNKNOWN_ERROR), e);
             return ResponseMsgUtil.error(GlobalException.UNKNOWN_ERROR);

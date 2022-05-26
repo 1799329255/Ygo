@@ -1,6 +1,8 @@
 package com.example.ygo.service;
 
 import com.example.ygo.entity.Card;
+import com.example.ygo.entity.CardModel;
+import com.example.ygo.entity.PageInfo;
 
 import java.util.List;
 
@@ -13,8 +15,8 @@ import java.util.List;
  */
 public interface CardService extends BaseService<Card,Long> {
 
-    List<Card> findCardInfo(Card card);
+    PageInfo<Card> findCardInfoPage(CardModel card);
 
-    List<Card> findCard(Card card);
+    List<Card> findCardInfo(CardModel card);
 
 }

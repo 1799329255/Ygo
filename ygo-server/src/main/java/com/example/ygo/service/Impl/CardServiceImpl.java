@@ -6,6 +6,8 @@ import com.example.ygo.dao.BaseMapper;
 import com.example.ygo.dao.CardMapper;
 import com.example.ygo.entity.Card;
 import com.example.ygo.entity.CardExample;
+import com.example.ygo.entity.CardModel;
+import com.example.ygo.entity.PageInfo;
 import com.example.ygo.service.CardService;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +34,7 @@ public class CardServiceImpl extends BaseServiceImpl<Card,Long, CardExample> imp
         return cardMapper;
     }
 
-    public CardExample createCardExample(Card card){
+    public CardExample createCardExample(CardModel card){
 
         final List<String> locales;
         final List<String> type_cs;
@@ -61,7 +63,6 @@ public class CardServiceImpl extends BaseServiceImpl<Card,Long, CardExample> imp
         }
 
         return new CardExample()
-                .distinct(true)
                 .createCriteria()
                 .when(StrUtil.isNotBlank(card.getPassword()), criteria -> criteria.andPasswordEqualTo(card.getPassword()))
                 .when(StrUtil.isNotBlank(card.getName()), criteria -> criteria.andNameLike("%" + card.getName() + "%"))
@@ -86,18 +87,20 @@ public class CardServiceImpl extends BaseServiceImpl<Card,Long, CardExample> imp
                 .when(card.getViewNum() != null, criteria -> criteria.andViewNumEqualTo(card.getViewNum()))
                 .andLogicalDeleted(false)
                 .example()
-                .orderBy("id");
+                .orderBy(card.getOrder())
+                .when(card.getPageNum() != null && card.getPageSize() != null, example -> example.page(card.getPageNum(), card.getPageSize()));
     }
 
     @Override
-    public List<Card> findCardInfo(Card card) {
+    public PageInfo<Card> findCardInfoPage(CardModel card) {
+        long total = cardMapper.countInfoByExample(createCardExample(card));
+        List<Card> cards = cardMapper.findCardInfoByExample(createCardExample(card));
+        return new PageInfo<>(cards,card.getPageNum(),card.getPageSize(),total);
+    }
+
+    @Override
+    public List<Card> findCardInfo(CardModel card) {
         List<Card> cards = cardMapper.findCardInfoByExample(createCardExample(card));
         return cards;
-    }
-
-    @Override
-    public List<Card> findCard(Card card) {
-        List<Card> cards = cardMapper.findCardInfoByExample(createCardExample(card));
-        return null;
     }
 }

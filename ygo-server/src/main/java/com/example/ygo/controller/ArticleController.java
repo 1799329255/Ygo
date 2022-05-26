@@ -4,19 +4,18 @@ import cn.hutool.core.util.StrUtil;
 import com.example.ygo.common.exception.GlobalException;
 import com.example.ygo.common.utils.LogUtil;
 import com.example.ygo.common.utils.ResponseMsgUtil;
-import com.example.ygo.entity.Article;
-import com.example.ygo.entity.Articlecategory;
-import com.example.ygo.entity.ResponseData;
-import com.example.ygo.entity.User;
+import com.example.ygo.entity.*;
 import com.example.ygo.service.ArticleService;
 import com.example.ygo.service.ArticlecategoryService;
 import com.example.ygo.service.BaseService;
+import com.example.ygo.service.MinioService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.security.Principal;
@@ -39,6 +38,8 @@ public class ArticleController extends BaseController<Article,Long>{
     private ArticleService articleService;
     @Resource
     private ArticlecategoryService articlecategoryService;
+    @Resource
+    private MinioService minioService;
 
     @Override
     public BaseService<Article, Long> getBaseService() {
@@ -48,14 +49,12 @@ public class ArticleController extends BaseController<Article,Long>{
     @RequestMapping(value = "/findByUserId", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation(value = "根据UserId获取文章列表")
-    public ResponseData findByUserId(){
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (user==null){
-            log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],
-                    new ResponseData("401","账号未登录或已过期")));
-            return ResponseMsgUtil.error(GlobalException.NOT_LOGIN_ERROR);
+    public ResponseData findByUserId(Long userId){
+        if (userId==null){
+            log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"请求参数校验失败"));
+            return ResponseMsgUtil.error(GlobalException.REQ_PARAMS_ERROR);
         }
-        return ResponseMsgUtil.success(articleService.findByUserId(user.getId()));
+        return ResponseMsgUtil.success(articleService.findByUserId(userId));
     }
 
     @RequestMapping(value = "/findArticleInfo", method = RequestMethod.GET)
@@ -69,9 +68,11 @@ public class ArticleController extends BaseController<Article,Long>{
                                         Integer pageNum,
                                         Integer pageSize){
 
-        if (pageNum <= 0 || pageSize <= 0){
-            log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"请求参数校验失败"));
-            return ResponseMsgUtil.error(GlobalException.REQ_PARAMS_ERROR);
+        if(pageNum != null && pageSize != null){
+            if (pageNum <= 0 || pageSize <= 0){
+                log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"请求参数校验失败"));
+                return ResponseMsgUtil.error(GlobalException.REQ_PARAMS_ERROR);
+            }
         }
 
         Article article = new Article();
@@ -104,6 +105,37 @@ public class ArticleController extends BaseController<Article,Long>{
         return ResponseMsgUtil.success(articleService.findArticleInfoPage(article,labelIds,order,pageNum,pageSize));
     }
 
+    @RequestMapping(value = "/updatePic", method = RequestMethod.POST)
+    @ResponseBody
+    @ApiOperation(value = "更新文章封面")
+    public ResponseData updatePic(Long id, MultipartFile file) {
+        try {
+            if (file==null || id==null){
+                log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"请求参数校验失败"));
+                return ResponseMsgUtil.error(GlobalException.REQ_PARAMS_ERROR);
+            }
+            Article article = articleService.findById(id);
+            if (article==null){
+                log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"该文章不存在，请重新输入"));
+                return ResponseMsgUtil.error("该文章不存在，请重新输入");
+            }
+            //指定桶名
+            String bucketName = "article-" + id.toString();
+            //移除原来的文件
+            minioService.removeObject(bucketName,article.getPic());
+            //上传新的文件并指定前缀
+            MultipartFileInfo multipartFileInfo = minioService.upload(bucketName, file,"cover");
+            article.setPic(multipartFileInfo.getFileUrl());
+            article.setUpdateTime(new Date());
+            //更新数据库中用户信息
+            articleService.update(article);
+            return ResponseMsgUtil.success(multipartFileInfo);
+        } catch (Exception e){
+            log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],GlobalException.UNKNOWN_ERROR), e);
+            return ResponseMsgUtil.error(GlobalException.UNKNOWN_ERROR);
+        }
+    }
+
     @RequestMapping(value = "/addArticle", method = RequestMethod.POST)
     @ResponseBody
     @ApiOperation(value = "添加文章")
@@ -114,9 +146,7 @@ public class ArticleController extends BaseController<Article,Long>{
                     new ResponseData("401","账号未登录或已过期")));
             return ResponseMsgUtil.error(GlobalException.NOT_LOGIN_ERROR);
         }
-        if (article.getCategoryId()==null
-                || StrUtil.isBlank(article.getTitle())
-                || StrUtil.isBlank(article.getContent())){
+        if (article.getCategoryId()==null || StrUtil.isBlank(article.getTitle())){
             log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"请求参数校验失败"));
             return ResponseMsgUtil.error(GlobalException.REQ_PARAMS_ERROR);
         }
@@ -135,6 +165,8 @@ public class ArticleController extends BaseController<Article,Long>{
         return ResponseMsgUtil.success(articleService.add(article));
     }
 
+
+
     @RequestMapping(value = "/updateArticle", method = RequestMethod.POST)
     @ResponseBody
     @ApiOperation(value = "更新文章")
@@ -147,8 +179,7 @@ public class ArticleController extends BaseController<Article,Long>{
         }
         if (article.getId()==null
                 || article.getCategoryId()==null
-                || StrUtil.isBlank(article.getTitle())
-                || StrUtil.isBlank(article.getContent())){
+                || StrUtil.isBlank(article.getTitle())){
             log.error(LogUtil.outLogHead(Thread.currentThread().getStackTrace()[1],"请求参数校验失败"));
             return ResponseMsgUtil.error(GlobalException.REQ_PARAMS_ERROR);
         }

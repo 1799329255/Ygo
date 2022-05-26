@@ -2,6 +2,53 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.ygo.dao.ArticleMapper">
 
+    <select id="countInfoByExample" parameterType="com.example.ygo.entity.ArticleExample" resultType="java.lang.Long">
+        SELECT count(*) FROM
+        (select count(*) from y_article a
+        LEFT JOIN y_article_with_label awl ON awl.article_id = a.id
+        LEFT JOIN y_article_label al ON awl.label_id = al.id
+
+        <where>
+            <if test="articleExample != null">
+                <foreach collection="articleExample.oredCriteria" item="criteria" separator="or">
+                    <if test="criteria.valid">
+
+                        <trim prefix="(" prefixOverrides="and" suffix=")">
+                            <foreach collection="criteria.criteria" item="criterion">
+                                <choose>
+                                    <when test="criterion.noValue">
+                                        and a.${criterion.condition}
+                                    </when>
+                                    <when test="criterion.singleValue">
+                                        and a.${criterion.condition} #{criterion.value}
+                                    </when>
+                                    <when test="criterion.betweenValue">
+                                        and a.${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                    </when>
+                                    <when test="criterion.listValue">
+                                        and a.${criterion.condition}
+                                        <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                                            #{listItem}
+                                        </foreach>
+                                    </when>
+                                </choose>
+                            </foreach>
+                        </trim>
+                    </if>
+                </foreach>
+            </if>
+
+            <if test="labelIds != null">
+                and al.id IN
+                <foreach collection="labelIds" item="labelId" separator="," open="(" close=")">
+                    #{labelId}
+                </foreach>
+            </if>
+        </where>
+
+        GROUP BY a.id) middle
+    </select>
+
     <resultMap id="ArticleInfo" type="com.example.ygo.entity.Article" extends="BaseResultMap">
         <result column="categoryName" property="categoryName"/>
         <association property="user" javaType="com.example.ygo.entity.User">
@@ -33,91 +80,100 @@
         <if test="articleExample.distinct">
             distinct
         </if>
-            a.id,
-            a.user_id,
-            a.category_id,
-            a.title,
-            a.content,
-            a.pic,
-            a.like_num,
-            a.view_num,
-            a.create_time,
-            a.update_time,
-            a.delete_time,
-            a.`status`,
-            ac.`name` categoryName,
-            al.id labelId,
-            al.`name` labelName,
-            al.`status` labelStatus,
-            u.id uid,
-            u.`name` uname,
-            u.age uage,
-            u.pic upic,
-            u.sex usex,
-            u.phone uphone,
-            u.email uemail,
-            u.address uaddress,
-            u.ban_time uban_time,
-            u.create_time ucreate_time,
-            u.update_time uupdate_time,
-            u.delete_time udelete_time,
-            u.`status` ustatus
+        a.id,
+        a.user_id,
+        a.category_id,
+        a.title,
+        a.content,
+        a.pic,
+        a.like_num,
+        a.view_num,
+        a.create_time,
+        a.update_time,
+        a.delete_time,
+        a.`status`,
+        ac.`name` categoryName,
+        al.id labelId,
+        al.`name` labelName,
+        al.`status` labelStatus,
+        u.id uid,
+        u.`name` uname,
+        u.age uage,
+        u.pic upic,
+        u.sex usex,
+        u.phone uphone,
+        u.email uemail,
+        u.address uaddress,
+        u.ban_time uban_time,
+        u.create_time ucreate_time,
+        u.update_time uupdate_time,
+        u.delete_time udelete_time,
+        u.`status` ustatus
         FROM
-            (
-                SELECT * FROM y_article
-                <if test="articleExample.rows != null">
-                    <if test="articleExample.offset != null">
-                        limit ${articleExample.offset}, ${articleExample.rows}
+        (
+            SELECT * FROM `y_article` WHERE
+            id IN (
+                SELECT DISTINCT
+                a.id
+                FROM
+                y_article a
+                LEFT JOIN y_article_with_label awl ON awl.article_id = a.id
+                LEFT JOIN y_article_label al ON awl.label_id = al.id
+                <where>
+                    <if test="articleExample != null">
+                        <foreach collection="articleExample.oredCriteria" item="criteria" separator="or">
+                            <if test="criteria.valid">
+
+                                <trim prefix="(" prefixOverrides="and" suffix=")">
+                                    <foreach collection="criteria.criteria" item="criterion">
+                                        <choose>
+                                            <when test="criterion.noValue">
+                                                and a.${criterion.condition}
+                                            </when>
+                                            <when test="criterion.singleValue">
+                                                and a.${criterion.condition} #{criterion.value}
+                                            </when>
+                                            <when test="criterion.betweenValue">
+                                                and a.${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                            </when>
+                                            <when test="criterion.listValue">
+                                                and a.${criterion.condition}
+                                                <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                                                    #{listItem}
+                                                </foreach>
+                                            </when>
+                                        </choose>
+                                    </foreach>
+                                </trim>
+                            </if>
+                        </foreach>
                     </if>
-                    <if test="articleExample.offset == null">
-                        limit ${articleExample.rows}
+                    <if test="labelIds != null">
+                        and al.id IN
+                        <foreach collection="labelIds" item="labelId" separator="," open="(" close=")">
+                            #{labelId}
+                        </foreach>
                     </if>
+                </where>
+            )
+            <if test="articleExample.orderByClause != null">
+                order by ${articleExample.orderByClause}
+            </if>
+
+            <if test="articleExample.rows != null">
+                <if test="articleExample.offset != null">
+                    limit ${articleExample.offset}, ${articleExample.rows}
                 </if>
-            ) a
-            LEFT JOIN y_article_with_label awl ON awl.article_id = a.id
-            LEFT JOIN y_article_label al ON awl.label_id = al.id
-            LEFT JOIN y_article_category ac ON ac.id = a.category_id
-            LEFT JOIN y_user u ON u.id = a.user_id
-        <where>
-            <if test="articleExample != null">
-                <foreach collection="articleExample.oredCriteria" item="criteria" separator="or">
-                    <if test="criteria.valid">
-
-                        <trim prefix="(" prefixOverrides="and" suffix=")">
-                            <foreach collection="criteria.criteria" item="criterion">
-                                <choose>
-                                    <when test="criterion.noValue">
-                                        and a.${criterion.condition}
-                                    </when>
-                                    <when test="criterion.singleValue">
-                                        and a.${criterion.condition} #{criterion.value}
-                                    </when>
-                                    <when test="criterion.betweenValue">
-                                        and a.${criterion.condition} #{criterion.value} and #{criterion.secondValue}
-                                    </when>
-                                    <when test="criterion.listValue">
-                                        and a.${criterion.condition}
-                                        <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
-                                            #{listItem}
-                                        </foreach>
-                                    </when>
-                                </choose>
-                            </foreach>
-                        </trim>
-                    </if>
-                </foreach>
+                <if test="articleExample.offset == null">
+                    limit ${articleExample.rows}
+                </if>
             </if>
-            <if test="labelIds != null">
-                and al.id IN
-                <foreach collection="labelIds" item="labelId" separator="," open="(" close=")">
-                    #{labelId}
-                </foreach>
-            </if>
-        </where>
+        ) a
+        LEFT JOIN y_article_with_label awl ON awl.article_id = a.id
+        LEFT JOIN y_article_label al ON awl.label_id = al.id
+        LEFT JOIN y_article_category ac ON ac.id = a.category_id
+        LEFT JOIN y_user u ON u.id = a.user_id
 
-        <if test="articleExample.orderByClause != null">
-            order by ${articleExample.orderByClause}
-        </if>
 
     </select>
 </mapper>

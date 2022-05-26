@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ArticlecategoryMapper extends BaseMapper<Articlecategory,Long,ArticlecategoryExample>{
 
+    List<Articlecategory> findArticleCategoryInfoByExample(ArticlecategoryExample articlecategoryExample);
 }

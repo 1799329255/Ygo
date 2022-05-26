@@ -29,6 +29,7 @@ public enum GlobalException {
     STREAM_NOT_CLOSE("0003","outputStream流没有关闭"),
     INTEGRITY_CONSTRAINT_VIOLATION("0004","该数据有外键关联，操作失败！"),
     DATABASE_ERROR("0005","数据库异常，操作失败！"),
+    REDIS_CONNECT_ERROR("0006","Redis连接失败"),
 
 
     //////////////////业务异常/////////////

@@ -6,20 +6,16 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-@ApiModel(value="com.example.ygo.entity.Package")
-public class Package implements Serializable {
-    public static final Integer IS_DELETED = Status.IS_DELETED.value();
-
-    public static final Integer NOT_DELETED = Status.NOT_DELETED.value();
-
-    @ApiModelProperty(value="idID")
+@ApiModel(value="com.example.ygo.entity.Cardwithpackage")
+public class Cardwithpackage implements Serializable {
+    @ApiModelProperty(value="id主键ID")
     private Long id;
 
-    @ApiModelProperty(value="name卡包名字")
-    private String name;
+    @ApiModelProperty(value="cardId卡牌ID")
+    private Long cardId;
 
-    @ApiModelProperty(value="status状态 0：删除  1：可用")
-    private Integer status;
+    @ApiModelProperty(value="packageId卡包ID")
+    private Long packageId;
 
     private static final long serialVersionUID = 1L;
 
@@ -31,24 +27,29 @@ public class Package implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public Long getCardId() {
+        return cardId;
     }
 
-    public void setName(String name) {
-        this.name = name == null ? null : name.trim();
+    public void setCardId(Long cardId) {
+        this.cardId = cardId;
     }
 
-    public void andLogicalDeleted(boolean deleted) {
-        setStatus(deleted ? Status.IS_DELETED.value() : Status.NOT_DELETED.value());
+    public Long getPackageId() {
+        return packageId;
     }
 
-    public Integer getStatus() {
-        return status;
+    public void setPackageId(Long packageId) {
+        this.packageId = packageId;
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
+    public Cardwithpackage() {
+        super();
+    }
+
+    public Cardwithpackage(Long cardId, Long packageId) {
+        this.cardId = cardId;
+        this.packageId = packageId;
     }
 
     @Override
@@ -62,10 +63,10 @@ public class Package implements Serializable {
         if (getClass() != that.getClass()) {
             return false;
         }
-        Package other = (Package) that;
+        Cardwithpackage other = (Cardwithpackage) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
-            && (this.getName() == null ? other.getName() == null : this.getName().equals(other.getName()))
-            && (this.getStatus() == null ? other.getStatus() == null : this.getStatus().equals(other.getStatus()));
+            && (this.getCardId() == null ? other.getCardId() == null : this.getCardId().equals(other.getCardId()))
+            && (this.getPackageId() == null ? other.getPackageId() == null : this.getPackageId().equals(other.getPackageId()));
     }
 
     @Override
@@ -73,8 +74,8 @@ public class Package implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
-        result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
-        result = prime * result + ((getStatus() == null) ? 0 : getStatus().hashCode());
+        result = prime * result + ((getCardId() == null) ? 0 : getCardId().hashCode());
+        result = prime * result + ((getPackageId() == null) ? 0 : getPackageId().hashCode());
         return result;
     }
 
@@ -84,24 +85,22 @@ public class Package implements Serializable {
         sb.append(getClass().getSimpleName());
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
-        sb.append(", IS_DELETED=").append(IS_DELETED);
-        sb.append(", NOT_DELETED=").append(NOT_DELETED);
         sb.append(", id=").append(id);
-        sb.append(", name=").append(name);
-        sb.append(", status=").append(status);
+        sb.append(", cardId=").append(cardId);
+        sb.append(", packageId=").append(packageId);
         sb.append("]");
         return sb.toString();
     }
 
-    public static Package.Builder builder() {
-        return new Package.Builder();
+    public static Cardwithpackage.Builder builder() {
+        return new Cardwithpackage.Builder();
     }
 
     public static class Builder {
-        private Package obj;
+        private Cardwithpackage obj;
 
         public Builder() {
-            this.obj = new Package();
+            this.obj = new Cardwithpackage();
         }
 
         public Builder id(Long id) {
@@ -109,73 +108,25 @@ public class Package implements Serializable {
             return this;
         }
 
-        public Builder name(String name) {
-            obj.setName(name);
+        public Builder cardId(Long cardId) {
+            obj.setCardId(cardId);
             return this;
         }
 
-        public Builder status(Integer status) {
-            obj.setStatus(status);
+        public Builder packageId(Long packageId) {
+            obj.setPackageId(packageId);
             return this;
         }
 
-        public Package build() {
+        public Cardwithpackage build() {
             return this.obj;
-        }
-    }
-
-    public enum Status {
-        NOT_DELETED(new Integer("1"), "未删除"),
-        IS_DELETED(new Integer("0"), "已删除");
-
-        private final Integer value;
-
-        private final String name;
-
-        Status(Integer value, String name) {
-            this.value = value;
-            this.name = name;
-        }
-
-        public Integer getValue() {
-            return this.value;
-        }
-
-        public Integer value() {
-            return this.value;
-        }
-
-        public String getName() {
-            return this.name;
-        }
-
-        public static Status parseValue(Integer value) {
-            if (value != null) {
-                for (Status item : values()) {
-                    if (item.value.equals(value)) {
-                        return item;
-                    }
-                }
-            }
-            return null;
-        }
-
-        public static Status parseName(String name) {
-            if (name != null) {
-                for (Status item : values()) {
-                    if (item.name.equals(name)) {
-                        return item;
-                    }
-                }
-            }
-            return null;
         }
     }
 
     public enum Column {
         id("id", "id", "BIGINT", false),
-        name("name", "name", "VARCHAR", false),
-        status("status", "status", "INTEGER", false);
+        cardId("card_id", "cardId", "BIGINT", false),
+        packageId("package_id", "packageId", "BIGINT", false);
 
         private static final String BEGINNING_DELIMITER = "\"";
 

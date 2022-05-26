@@ -6,15 +6,15 @@
         <collection property="packages" ofType="com.example.ygo.entity.Package" javaType="java.util.List">
             <id column="pid" jdbcType="BIGINT" property="id" />
             <result column="pname" jdbcType="VARCHAR" property="name" />
-            <result column="pnumber" jdbcType="VARCHAR" property="number" />
-            <result column="plocale" jdbcType="VARCHAR" property="locale" />
-            <result column="pphase" jdbcType="INTEGER" property="phase" />
-            <result column="ptime" jdbcType="TIMESTAMP" property="time" />
-            <result column="plike_num" jdbcType="BIGINT" property="likeNum" />
-            <result column="pview_num" jdbcType="BIGINT" property="viewNum" />
-            <result column="pcreate_time" jdbcType="TIMESTAMP" property="createTime" />
-            <result column="pupdate_time" jdbcType="TIMESTAMP" property="updateTime" />
-            <result column="pdelete_time" jdbcType="TIMESTAMP" property="deleteTime" />
+<!--            <result column="pnumber" jdbcType="VARCHAR" property="number" />-->
+<!--            <result column="plocale" jdbcType="VARCHAR" property="locale" />-->
+<!--            <result column="pphase" jdbcType="INTEGER" property="phase" />-->
+<!--            <result column="ptime" jdbcType="TIMESTAMP" property="time" />-->
+<!--            <result column="plike_num" jdbcType="BIGINT" property="likeNum" />-->
+<!--            <result column="pview_num" jdbcType="BIGINT" property="viewNum" />-->
+<!--            <result column="pcreate_time" jdbcType="TIMESTAMP" property="createTime" />-->
+<!--            <result column="pupdate_time" jdbcType="TIMESTAMP" property="updateTime" />-->
+<!--            <result column="pdelete_time" jdbcType="TIMESTAMP" property="deleteTime" />-->
             <result column="pstatus" jdbcType="INTEGER" property="status" />
         </collection>
     </resultMap>
@@ -53,112 +53,81 @@
             c.`status`,
             p.id pid,
             p.`name` pname,
-            p.number pnumber,
-            p.locale plocale,
-            p.phase pphase,
-            p.time ptime,
-            p.like_num plike_num,
-            p.view_num pview_num,
-            p.create_time pcreate_time,
-            p.update_time pupdate_time,
-            p.delete_time pdelete_time,
+--             p.number pnumber,
+--             p.locale plocale,
+--             p.phase pphase,
+--             p.time ptime,
+--             p.like_num plike_num,
+--             p.view_num pview_num,
+--             p.create_time pcreate_time,
+--             p.update_time pupdate_time,
+--             p.delete_time pdelete_time,
             p.`status` pstatus
         FROM
-            `y_card` c,
-            y_package p,
-            y_card_with_package cwp
-        <where>
-            cwp.card_id = c.id
-            AND cwp.package_id = p.id
-            <if test="_parameter != null">
-                <foreach collection="oredCriteria" item="criteria" separator="or">
-                    <if test="criteria.valid">
-                        AND
-                        <trim prefix="(" prefixOverrides="and" suffix=")">
-                            <foreach collection="criteria.criteria" item="criterion">
-                                <choose>
-                                    <when test="criterion.noValue">
-                                        and c.${criterion.condition}
-                                    </when>
-                                    <when test="criterion.singleValue">
-                                        <if test="criterion.condition=='locale ='">
-                                            and FIND_IN_SET(#{criterion.value},c.locale)
-                                        </if>
-                                        <if test="criterion.condition=='type_c ='">
-                                            and FIND_IN_SET(#{criterion.value},c.type_c)
-                                        </if>
-                                        <if test="criterion.condition=='link_arrow ='">
-                                            and FIND_IN_SET(#{criterion.value},c.link_arrow)
-                                        </if>
-                                        <if test="criterion.condition=='rare ='">
-                                            and FIND_IN_SET(#{criterion.value},c.rare)
-                                        </if>
-                                        <if test="criterion.condition!='locale =' and criterion.condition!='type_c =' and criterion.condition!='link_arrow =' and criterion.condition!='rare ='">
-                                            and c.${criterion.condition} #{criterion.value}
-                                        </if>
-                                    </when>
-                                    <when test="criterion.betweenValue">
-                                        and c.${criterion.condition} #{criterion.value} and #{criterion.secondValue}
-                                    </when>
-                                    <when test="criterion.listValue">
-                                        and c.${criterion.condition}
-                                        <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
-                                            #{listItem}
-                                        </foreach>
-                                    </when>
-                                </choose>
-                            </foreach>
-                        </trim>
+            (
+                SELECT * FROM `y_card`
+                <where>
+                    <if test="_parameter != null">
+                        <foreach collection="oredCriteria" item="criteria" separator="or">
+                            <if test="criteria.valid">
+                                <trim prefix="(" prefixOverrides="and" suffix=")">
+                                    <foreach collection="criteria.criteria" item="criterion">
+                                        <choose>
+                                            <when test="criterion.noValue">
+                                                and ${criterion.condition}
+                                            </when>
+                                            <when test="criterion.singleValue">
+                                                <if test="criterion.condition=='locale ='">
+                                                    and FIND_IN_SET(#{criterion.value},locale)
+                                                </if>
+                                                <if test="criterion.condition=='type_c ='">
+                                                    and FIND_IN_SET(#{criterion.value},type_c)
+                                                </if>
+                                                <if test="criterion.condition=='link_arrow ='">
+                                                    and FIND_IN_SET(#{criterion.value},link_arrow)
+                                                </if>
+                                                <if test="criterion.condition=='rare ='">
+                                                    and FIND_IN_SET(#{criterion.value},rare)
+                                                </if>
+                                                <if test="criterion.condition!='locale =' and criterion.condition!='type_c =' and criterion.condition!='link_arrow =' and criterion.condition!='rare ='">
+                                                    and ${criterion.condition} #{criterion.value}
+                                                </if>
+                                            </when>
+                                            <when test="criterion.betweenValue">
+                                                and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                            </when>
+                                            <when test="criterion.listValue">
+                                                and ${criterion.condition}
+                                                <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                                                    #{listItem}
+                                                </foreach>
+                                            </when>
+                                        </choose>
+                                    </foreach>
+                                </trim>
+                            </if>
+                        </foreach>
                     </if>
-                </foreach>
-            </if>
-        </where>
-        <if test="orderByClause != null">
-            order by ${orderByClause}
-        </if>
-        <if test="rows != null">
-            <if test="offset != null">
-                limit ${offset}, ${rows}
-            </if>
-            <if test="offset == null">
-                limit ${rows}
-            </if>
-        </if>
+                </where>
+                <if test="orderByClause != null">
+                    order by ${orderByClause}
+                </if>
+                <if test="rows != null">
+                    <if test="offset != null">
+                        limit ${offset}, ${rows}
+                    </if>
+                    <if test="offset == null">
+                        limit ${rows}
+                    </if>
+                </if>
+            ) c
+            LEFT JOIN y_card_with_package cwp ON cwp.card_id = c.id
+            LEFT JOIN y_package p ON cwp.package_id = p.id
+
     </select>
 
-    <select id="findCardByExample" parameterType="com.example.ygo.entity.CardExample" resultMap="BaseResultMap">
-        SELECT
-        <if test="distinct">
-            distinct
-        </if>
-            c.id,
-            c.`password`,
-            c.`name`,
-            c.ban,
-            c.locale,
-            c.type_f,
-            c.type_c,
-            c.pic,
-            c.`level`,
-            c.attribute,
-            c.race,
-            c.atk,
-            c.def,
-            c.pend,
-            c.link,
-            c.link_arrow,
-            c.pend_desc,
-            c.`desc`,
-            c.rare,
-            c.href,
-            c.like_num,
-            c.view_num,
-            c.create_time,
-            c.update_time,
-            c.delete_time,
-            c.`status`
-        FROM
-        `y_card` c
+    <select id="countInfoByExample" parameterType="com.example.ygo.entity.CardExample" resultType="java.lang.Long">
+        select count(*) from y_card
         <where>
             <if test="_parameter != null">
                 <foreach collection="oredCriteria" item="criteria" separator="or">
@@ -167,30 +136,30 @@
                             <foreach collection="criteria.criteria" item="criterion">
                                 <choose>
                                     <when test="criterion.noValue">
-                                        and c.${criterion.condition}
+                                        and ${criterion.condition}
                                     </when>
                                     <when test="criterion.singleValue">
                                         <if test="criterion.condition=='locale ='">
-                                            and FIND_IN_SET(#{criterion.value},c.locale)
+                                            and FIND_IN_SET(#{criterion.value},locale)
                                         </if>
                                         <if test="criterion.condition=='type_c ='">
-                                            and FIND_IN_SET(#{criterion.value},c.type_c)
+                                            and FIND_IN_SET(#{criterion.value},type_c)
                                         </if>
                                         <if test="criterion.condition=='link_arrow ='">
-                                            and FIND_IN_SET(#{criterion.value},c.link_arrow)
+                                            and FIND_IN_SET(#{criterion.value},link_arrow)
                                         </if>
                                         <if test="criterion.condition=='rare ='">
-                                            and FIND_IN_SET(#{criterion.value},c.rare)
+                                            and FIND_IN_SET(#{criterion.value},rare)
                                         </if>
                                         <if test="criterion.condition!='locale =' and criterion.condition!='type_c =' and criterion.condition!='link_arrow =' and criterion.condition!='rare ='">
-                                            and c.${criterion.condition} #{criterion.value}
+                                            and ${criterion.condition} #{criterion.value}
                                         </if>
                                     </when>
                                     <when test="criterion.betweenValue">
-                                        and c.${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                        and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
                                     </when>
                                     <when test="criterion.listValue">
-                                        and c.${criterion.condition}
+                                        and ${criterion.condition}
                                         <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
                                             #{listItem}
                                         </foreach>
@@ -202,17 +171,6 @@
                 </foreach>
             </if>
         </where>
-        <if test="orderByClause != null">
-            order by ${orderByClause}
-        </if>
-        <if test="rows != null">
-            <if test="offset != null">
-                limit ${offset}, ${rows}
-            </if>
-            <if test="offset == null">
-                limit ${rows}
-            </if>
-        </if>
     </select>
 
 </mapper>

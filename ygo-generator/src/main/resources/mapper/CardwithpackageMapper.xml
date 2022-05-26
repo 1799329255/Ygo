@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.ygo.dao.PackageMapper">
-  <resultMap id="BaseResultMap" type="com.example.ygo.entity.Package">
+<mapper namespace="com.example.ygo.dao.CardwithpackageMapper">
+  <resultMap id="BaseResultMap" type="com.example.ygo.entity.Cardwithpackage">
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="card_id" jdbcType="BIGINT" property="cardId" />
+    <result column="package_id" jdbcType="BIGINT" property="packageId" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -65,15 +65,15 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, name, status
+    id, card_id, package_id
   </sql>
-  <select id="selectByExample" parameterType="com.example.ygo.entity.PackageExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.example.ygo.entity.CardwithpackageExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from y_package
+    from y_card_with_package
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -104,7 +104,7 @@
         <include refid="Base_Column_List" />
       </otherwise>
     </choose>
-    from y_package
+    from y_card_with_package
     <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -123,7 +123,7 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from y_package
+    from y_card_with_package
     where id = #{id,jdbcType=BIGINT}
   </select>
   <select id="selectByPrimaryKeySelective" parameterType="map" resultMap="BaseResultMap">
@@ -138,42 +138,27 @@
         <include refid="Base_Column_List" />
       </otherwise>
     </choose>
-    from y_package
+    from y_card_with_package
     where id = #{id,jdbcType=BIGINT}
-  </select>
-  <select id="selectByPrimaryKeyWithLogicalDelete" parameterType="map" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from y_package
-    where id = #{id,jdbcType=BIGINT}
-      and status = 
-    <choose>
-      <when test="andLogicalDeleted">
-        0
-      </when>
-      <otherwise>
-        1
-      </otherwise>
-    </choose>
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from y_package
+    delete from y_card_with_package
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <delete id="deleteByExample" parameterType="com.example.ygo.entity.PackageExample">
-    delete from y_package
+  <delete id="deleteByExample" parameterType="com.example.ygo.entity.CardwithpackageExample">
+    delete from y_card_with_package
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.example.ygo.entity.Package">
-    insert into y_package (id, name, status
+  <insert id="insert" parameterType="com.example.ygo.entity.Cardwithpackage">
+    insert into y_card_with_package (id, card_id, package_id
       )
-    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}
+    values (#{id,jdbcType=BIGINT}, #{cardId,jdbcType=BIGINT}, #{packageId,jdbcType=BIGINT}
       )
   </insert>
   <insert id="insertSelective" parameterType="map">
-    insert into y_package
+    insert into y_card_with_package
     <choose>
       <when test="selective != null and selective.length > 0">
         <foreach close=")" collection="selective" item="column" open="(" separator=",">
@@ -185,11 +170,11 @@
           <if test="record.id != null">
             id,
           </if>
-          <if test="record.name != null">
-            name,
+          <if test="record.cardId != null">
+            card_id,
           </if>
-          <if test="record.status != null">
-            status,
+          <if test="record.packageId != null">
+            package_id,
           </if>
         </trim>
         <trim prefix="(" suffix=")" suffixOverrides="," />
@@ -207,24 +192,24 @@
           <if test="record.id != null">
             #{record.id,jdbcType=BIGINT},
           </if>
-          <if test="record.name != null">
-            #{record.name,jdbcType=VARCHAR},
+          <if test="record.cardId != null">
+            #{record.cardId,jdbcType=BIGINT},
           </if>
-          <if test="record.status != null">
-            #{record.status,jdbcType=INTEGER},
+          <if test="record.packageId != null">
+            #{record.packageId,jdbcType=BIGINT},
           </if>
         </trim>
       </otherwise>
     </choose>
   </insert>
-  <select id="countByExample" parameterType="com.example.ygo.entity.PackageExample" resultType="java.lang.Long">
-    select count(*) from y_package
+  <select id="countByExample" parameterType="com.example.ygo.entity.CardwithpackageExample" resultType="java.lang.Long">
+    select count(*) from y_card_with_package
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update y_package
+    update y_card_with_package
     SET
     <choose>
       <when test="selective != null and selective.length > 0">
@@ -237,11 +222,11 @@
           <if test="record.id != null">
             id = #{record.id,jdbcType=BIGINT},
           </if>
-          <if test="record.name != null">
-            name = #{record.name,jdbcType=VARCHAR},
+          <if test="record.cardId != null">
+            card_id = #{record.cardId,jdbcType=BIGINT},
           </if>
-          <if test="record.status != null">
-            status = #{record.status,jdbcType=INTEGER},
+          <if test="record.packageId != null">
+            package_id = #{record.packageId,jdbcType=BIGINT},
           </if>
         </trim>
       </otherwise>
@@ -251,16 +236,16 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update y_package
+    update y_card_with_package
     set id = #{record.id,jdbcType=BIGINT},
-      name = #{record.name,jdbcType=VARCHAR},
-      status = #{record.status,jdbcType=INTEGER}
+      card_id = #{record.cardId,jdbcType=BIGINT},
+      package_id = #{record.packageId,jdbcType=BIGINT}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
   <update id="updateByPrimaryKeySelective" parameterType="map">
-    update y_package
+    update y_card_with_package
     SET
     <choose>
       <when test="selective != null and selective.length > 0">
@@ -270,27 +255,27 @@
       </when>
       <otherwise>
         <trim suffixOverrides=",">
-          <if test="record.name != null">
-            name = #{record.name,jdbcType=VARCHAR},
+          <if test="record.cardId != null">
+            card_id = #{record.cardId,jdbcType=BIGINT},
           </if>
-          <if test="record.status != null">
-            status = #{record.status,jdbcType=INTEGER},
+          <if test="record.packageId != null">
+            package_id = #{record.packageId,jdbcType=BIGINT},
           </if>
         </trim>
       </otherwise>
     </choose>
     where id = #{record.id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.example.ygo.entity.Package">
-    update y_package
-    set name = #{name,jdbcType=VARCHAR},
-      status = #{status,jdbcType=INTEGER}
+  <update id="updateByPrimaryKey" parameterType="com.example.ygo.entity.Cardwithpackage">
+    update y_card_with_package
+    set card_id = #{cardId,jdbcType=BIGINT},
+      package_id = #{packageId,jdbcType=BIGINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <select id="selectOneByExample" parameterType="com.example.ygo.entity.PackageExample" resultMap="BaseResultMap">
+  <select id="selectOneByExample" parameterType="com.example.ygo.entity.CardwithpackageExample" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
-    from y_package
+    from y_card_with_package
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -311,7 +296,7 @@
         <include refid="Base_Column_List" />
       </otherwise>
     </choose>
-    from y_package
+    from y_card_with_package
     <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -321,16 +306,16 @@
     limit 1
   </select>
   <insert id="batchInsert" parameterType="map">
-    insert into y_package
-    (id, name, status)
+    insert into y_card_with_package
+    (id, card_id, package_id)
     values
     <foreach collection="list" item="item" separator=",">
-      (#{item.id,jdbcType=BIGINT}, #{item.name,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER}
+      (#{item.id,jdbcType=BIGINT}, #{item.cardId,jdbcType=BIGINT}, #{item.packageId,jdbcType=BIGINT}
         )
     </foreach>
   </insert>
   <insert id="batchInsertSelective" parameterType="map">
-    insert into y_package (
+    insert into y_card_with_package (
     <foreach collection="selective" item="column" separator=",">
       ${column.escapedColumnName}
     </foreach>
@@ -342,24 +327,14 @@
         <if test="'id'.toString() == column.value">
           #{item.id,jdbcType=BIGINT}
         </if>
-        <if test="'name'.toString() == column.value">
-          #{item.name,jdbcType=VARCHAR}
+        <if test="'card_id'.toString() == column.value">
+          #{item.cardId,jdbcType=BIGINT}
         </if>
-        <if test="'status'.toString() == column.value">
-          #{item.status,jdbcType=INTEGER}
+        <if test="'package_id'.toString() == column.value">
+          #{item.packageId,jdbcType=BIGINT}
         </if>
       </foreach>
       )
     </foreach>
   </insert>
-  <update id="logicalDeleteByExample" parameterType="map">
-    update y_package set status = 0
-    <if test="_parameter != null">
-      <include refid="Update_By_Example_Where_Clause" />
-    </if>
-  </update>
-  <update id="logicalDeleteByPrimaryKey" parameterType="java.lang.Long">
-    update y_package set status = 0
-    where id = #{id,jdbcType=BIGINT}
-  </update>
 </mapper>

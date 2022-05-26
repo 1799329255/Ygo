@@ -22,6 +22,8 @@ public interface UserService extends BaseService<User,Long>{
 
     User findByPhone(Long phone);
 
+    PageInfo<User> findUserInfoPage(User user, String order, Integer pageNum, Integer pageSize);
+
     int addUser(User user);
 
     Boolean isRepeat(User user);
@@ -33,4 +35,10 @@ public interface UserService extends BaseService<User,Long>{
     List<User> findFollowsByUserId(Long id);
 
     PageInfo<User> findFollowsPageByUserId(Long id,Integer pageNum,Integer pageSize);
+
+    int follow(Long fanId,Long followId);
+
+    int unFollow(Long fanId,Long followId);
+
+    boolean isFollow(Long fanId,Long followId);
 }

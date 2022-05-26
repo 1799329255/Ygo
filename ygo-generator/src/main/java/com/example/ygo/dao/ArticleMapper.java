@@ -11,4 +11,7 @@ public interface ArticleMapper extends BaseMapper<Article,Long,ArticleExample>{
 
     List<Article> findArticleInfoByExample(@Param("articleExample") ArticleExample articleExample,
                                            @Param("labelIds")Long[] labelIds);
+
+    Long countInfoByExample(@Param("articleExample") ArticleExample articleExample,
+                            @Param("labelIds")Long[] labelIds);
 }

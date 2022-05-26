@@ -75,7 +75,7 @@ public class ArticleServiceImpl extends BaseServiceImpl<Article,Long, ArticleExa
                 .example()
                 .orderBy(order)
                 .when(pageNum != null && pageSize != null, example -> example.page(pageNum, pageSize));
-        long total = articleMapper.countByExample(articleExample);
+        long total = articleMapper.countInfoByExample(articleExample,labelIds);
         List<Article> articles = articleMapper.findArticleInfoByExample(articleExample, labelIds);
         return new PageInfo<>(articles,pageNum,pageSize,total);
     }
